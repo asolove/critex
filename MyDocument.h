@@ -8,18 +8,15 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "TextUnit.h"
+@class TextUnit;
+@class TextUnitViewController;
 
 @interface MyDocument : NSDocument
 {
-	TextUnit *textUnit;
-	IBOutlet NSTextView *mainTextView;
-	IBOutlet NSTextView *footnoteTextView;
+	IBOutlet NSScrollView *scrollView;
+	NSMutableArray *viewControllers;
 }
--(IBAction)createFootnoteForSelection:(id)sender;
 
--(void)createFootnoteForRange:(NSRange)range;
-
-- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
-
+-(void)addTextUnitToEnd:(NSView *)textUnitView;
+-(IBAction)textViewSize:(id)sender;
 @end
