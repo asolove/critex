@@ -22,6 +22,12 @@
 		TextUnitViewController* vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
 		[viewControllers addObject:vc];
 		
+		textUnit = [[TextUnit alloc] initWithStringForMain:@"Main text"
+												translated:@"Trans. text"
+												 footnotes:@"Footnotes text"];
+		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
+		[viewControllers addObject:vc];
+		
 		[textUnit release];
 		[vc release];
     }
@@ -37,14 +43,12 @@
 -(void)addTextUnitToEnd:(NSView *)textUnitView
 {
 	[[scrollView contentView] addSubview:textUnitView positioned:NSWindowAbove relativeTo:nil];
-	NSRect frame = [textUnitView frame];
-	frame.origin.y = 20;
-	[textUnitView setFrame:frame];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
 {
     [super windowControllerDidLoadNib:aController];
+	[self addTextUnitToEnd: [[viewControllers objectAtIndex:1] view]];
 	[self addTextUnitToEnd: [[viewControllers objectAtIndex:0] view]];
 }
 

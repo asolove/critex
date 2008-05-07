@@ -15,4 +15,8 @@
 	NSTextStorage *footnoteText;
 }
 
+-(id)initWithStringForMain: (NSString *)mainString
+				translated: (NSString *)translatedString
+				 footnotes: (NSString *)footnotesString;
+
 @end
