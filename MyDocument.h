@@ -15,9 +15,10 @@
 @interface MyDocument : NSDocument
 {
 	IBOutlet NSScrollView *scrollView;
-	IBOutlet NSView *flippedView;
+	NSView *flippedView;
 	NSMutableArray *viewControllers;
 }
 
 -(IBAction)textViewSize:(id)sender;
+-(void)reFrameTextUnitsFrom:(int)start;
 @end

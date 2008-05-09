@@ -326,21 +326,18 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>34460F550DD4094B00CE06FB</string>
+										<string>342EAFFA0DD427D500CEA3D3</string>
 										<key>history</key>
 										<array>
 											<string>3426176E0DD131E800342F9A</string>
 											<string>342617DF0DD1392700342F9A</string>
 											<string>34460EA60DD4028900CE06FB</string>
-											<string>34460EA80DD4028900CE06FB</string>
 											<string>34460EAA0DD4028900CE06FB</string>
 											<string>34460EAB0DD4028900CE06FB</string>
 											<string>34460EDC0DD402B000CE06FB</string>
 											<string>34460EDD0DD402B000CE06FB</string>
-											<string>34460EE90DD402D700CE06FB</string>
-											<string>34460EFB0DD4045A00CE06FB</string>
 											<string>34460F250DD4072400CE06FB</string>
-											<string>34460F260DD4072400CE06FB</string>
+											<string>34460F600DD409BA00CE06FB</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -349,46 +346,10 @@
 											<string>34BFEBBA0DCE380700C58E7D</string>
 											<string>342617E90DD1392700342F9A</string>
 											<string>34460EAF0DD4028900CE06FB</string>
-											<string>34460EB00DD4028900CE06FB</string>
-											<string>34460EB10DD4028900CE06FB</string>
 											<string>34460EB20DD4028900CE06FB</string>
-											<string>34460EB40DD4028900CE06FB</string>
-											<string>34460EB60DD4028900CE06FB</string>
-											<string>34460EB80DD4028900CE06FB</string>
-											<string>34460EB90DD4028900CE06FB</string>
-											<string>34460EBA0DD4028900CE06FB</string>
-											<string>34460EBC0DD4028900CE06FB</string>
-											<string>34460EBE0DD4028900CE06FB</string>
-											<string>34460EBF0DD4028900CE06FB</string>
-											<string>34460EC10DD4028900CE06FB</string>
-											<string>34460EC20DD4028900CE06FB</string>
-											<string>34460EC30DD4028900CE06FB</string>
-											<string>34460EC40DD4028900CE06FB</string>
-											<string>34460EC50DD4028900CE06FB</string>
-											<string>34460EC60DD4028900CE06FB</string>
-											<string>34460EC80DD4028900CE06FB</string>
-											<string>34460EC90DD4028900CE06FB</string>
-											<string>34460ECA0DD4028900CE06FB</string>
-											<string>34460ECB0DD4028900CE06FB</string>
-											<string>34460ECC0DD4028900CE06FB</string>
-											<string>34460EDF0DD402B000CE06FB</string>
 											<string>34460EE00DD402B000CE06FB</string>
-											<string>34460EE10DD402B000CE06FB</string>
-											<string>34460EE20DD402B000CE06FB</string>
-											<string>34460EE30DD402B000CE06FB</string>
-											<string>34460EE40DD402B000CE06FB</string>
-											<string>34460EE50DD402B000CE06FB</string>
 											<string>34460EE60DD402B000CE06FB</string>
-											<string>34460EEB0DD402D700CE06FB</string>
-											<string>34460EEC0DD402D700CE06FB</string>
-											<string>34460EF50DD403CB00CE06FB</string>
-											<string>34460EF60DD403CB00CE06FB</string>
-											<string>34460EFE0DD4045A00CE06FB</string>
-											<string>34460EFF0DD4045A00CE06FB</string>
 											<string>34460F140DD4062F00CE06FB</string>
-											<string>34460F1C0DD4065800CE06FB</string>
-											<string>34460F270DD4072400CE06FB</string>
-											<string>34460F280DD4072400CE06FB</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -511,11 +472,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>34460ECE0DD4028900CE06FB</string>
+				<string>342EAFF70DD4260B00CEA3D3</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>34460ECF0DD4028900CE06FB</string>
+				<string>342EAFF80DD4260B00CEA3D3</string>
 				<string>3423E8CB0DCBEF5400B0DD23</string>
-				<string>34460ED00DD4028900CE06FB</string>
+				<string>342EAFF90DD4260B00CEA3D3</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -697,9 +658,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>34460ED70DD4028900CE06FB</string>
-		<string>34460ED80DD4028900CE06FB</string>
-		<string>34460ED90DD4028900CE06FB</string>
 		<string>/Users/asolove/Sites/Cocoa/TextUnit/TextUnit.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

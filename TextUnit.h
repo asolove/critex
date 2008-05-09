@@ -11,12 +11,12 @@
 
 @interface TextUnit : NSObject {
 	NSTextStorage *mainText;
-	NSTextStorage *translatedText;
+	NSTextStorage *translationText;
 	NSTextStorage *footnoteText;
 }
 
 -(id)initWithStringForMain: (NSString *)mainString
-				translated: (NSString *)translatedString
+				translated: (NSString *)translationString
 				 footnotes: (NSString *)footnotesString;
 
 @end

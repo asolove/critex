@@ -30,9 +30,22 @@
 	
 	int width = [boxView frame].size.width;
 	
-	mainTextView = [self createTextViewWithFrame:NSMakeRect(5.0, 5.0, width*2/3 - 15, 24)];
-	translationView = [self createTextViewWithFrame:NSMakeRect(width*2/3 - 5, 5.0, width*1/3 - 5, 24)];
+	mainTextView = [self createTextViewWithFrame:NSMakeRect(5.0, 5.0, width*1/3, 24)];
+	translationView = [self createTextViewWithFrame:NSMakeRect(width*1/3 + 5, 5.0, width*2/3 - 10, 24)];
 	footnoteTextView = [self createTextViewWithFrame:NSMakeRect(5.0, 34, width - 15, 24)];
+	
+	[mainTextView bind:@"attributedString"
+			  toObject:tu 
+		   withKeyPath:@"mainText"
+			   options:nil];
+	[translationView bind:@"attributedString"
+			  toObject:tu 
+		   withKeyPath:@"translationText"
+			   options:nil];
+	[footnoteTextView bind:@"attributedString"
+			  toObject:tu 
+		   withKeyPath:@"footnoteText"
+			   options:nil];
 	
 	[boxView addSubview:mainTextView];
 	[boxView addSubview:translationView];

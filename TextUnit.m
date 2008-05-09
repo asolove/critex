@@ -18,7 +18,7 @@
 }
 
 -(id)initWithStringForMain: (NSString *)mainString
-				translated: (NSString *)translatedString
+				translated: (NSString *)translationString
 				 footnotes: (NSString *)footnotesString
 {
 	self = [super init];
@@ -29,7 +29,7 @@
 		
 		mainText = [[NSMutableAttributedString alloc] initWithString:mainString
 														  attributes:textAttributes];
-		translatedText = [[NSMutableAttributedString alloc] initWithString:translatedString
+		translationText = [[NSMutableAttributedString alloc] initWithString:translationString
 																attributes:textAttributes];
 		footnoteText = [[NSMutableAttributedString alloc] initWithString:footnotesString];
 	}
@@ -40,6 +40,7 @@
 -(void)dealloc
 {
 	[mainText release];
+	[translationText release];
 	[footnoteText release];
 	[super dealloc];
 }
