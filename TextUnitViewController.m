@@ -8,6 +8,7 @@
 
 #import "TextUnitViewController.h"
 #import "TextUnit.h"
+#import "TextUnitView.h"
 
 
 @implementation TextUnitViewController

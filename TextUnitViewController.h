@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 @class TextUnit;
-
+@class TextUnitView;
 
 @interface TextUnitViewController : NSViewController {
 	TextUnit *textUnit;
