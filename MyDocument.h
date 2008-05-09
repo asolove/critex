@@ -8,15 +8,16 @@
 
 
 #import <Cocoa/Cocoa.h>
+@class FlippedView;
 @class TextUnit;
 @class TextUnitViewController;
 
 @interface MyDocument : NSDocument
 {
 	IBOutlet NSScrollView *scrollView;
+	IBOutlet NSView *flippedView;
 	NSMutableArray *viewControllers;
 }
 
--(void)addTextUnitToEnd:(NSView *)textUnitView;
 -(IBAction)textViewSize:(id)sender;
 @end

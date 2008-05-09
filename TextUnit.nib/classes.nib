@@ -14,15 +14,6 @@
 			<string>TextUnitViewController</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>footnoteTextView</key>
-				<string>NSTextView</string>
-				<key>mainTextView</key>
-				<string>NSTextView</string>
-				<key>translationView</key>
-				<string>NSTextView</string>
-			</dict>
 			<key>SUPERCLASS</key>
 			<string>NSViewController</string>
 		</dict>
@@ -33,14 +24,6 @@
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
 			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
-			<string>TextUnitView</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSView</string>
 		</dict>
 	</array>
 	<key>IBVersion</key>

@@ -9,18 +9,21 @@
 #import <Cocoa/Cocoa.h>
 @class TextUnit;
 @class TextUnitView;
+@class FlippedView;
 
 @interface TextUnitViewController : NSViewController {
 	TextUnit *textUnit;
-	IBOutlet NSTextView *mainTextView;
-	IBOutlet NSTextView *translationView;
-	IBOutlet NSTextView *footnoteTextView;
+	NSBox *boxView;
+	NSTextView *mainTextView;
+	NSTextView *translationView;
+	NSTextView *footnoteTextView;
 }
 @property (retain) TextUnit *textUnit;
 
 - (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
 -(IBAction)createFootnoteForSelection:(id)sender;
 -(void)createFootnoteForRange:(NSRange)range;
+-(NSTextView *)createTextViewWithFrame:(NSRect)frame;
 
 -(id)initWithTextUnit:(TextUnit *)tu;
 @end

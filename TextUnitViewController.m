@@ -9,28 +9,59 @@
 #import "TextUnitViewController.h"
 #import "TextUnit.h"
 #import "TextUnitView.h"
-
+#import "FlippedView.h"
 
 @implementation TextUnitViewController
 @synthesize textUnit;
 
 -(id)initWithTextUnit:(TextUnit *)tu
 {
-	NSLog(@"Creating Text Unit View Controller.");
 	if (![super initWithNibName:@"TextUnit"
 						 bundle:nil]) {
 		return nil;
 	}
 	[self setTitle:@"TextUnit"];
 	[self setTextUnit:tu];
-	NSLog(@"TUVC created successfully.");
+	
+	// Get the box view from the view hierarchy
+	boxView = [[[self view] subviews] objectAtIndex:0];
+	[boxView setContentView:[[FlippedView alloc] initWithFrame:[boxView frame]]];
+	[boxView addSubview:mainTextView];
+	
+	int width = [boxView frame].size.width;
+	
+	mainTextView = [self createTextViewWithFrame:NSMakeRect(5.0, 5.0, width*2/3 - 15, 24)];
+	translationView = [self createTextViewWithFrame:NSMakeRect(width*2/3 - 5, 5.0, width*1/3 - 5, 24)];
+	footnoteTextView = [self createTextViewWithFrame:NSMakeRect(5.0, 34, width - 15, 24)];
+	
+	[boxView addSubview:mainTextView];
+	[boxView addSubview:translationView];
+	[boxView addSubview:footnoteTextView];
+	
+	NSRect boxFrame = [boxView frame];
+	boxFrame.origin.y = 0;
+	boxFrame.size.height = 68;
+	[boxView setFrame:boxFrame];
+	
+	[mainTextView release];
+	[translationView release];
+	[footnoteTextView release];
+	
 	return self;
 }
 
 -(void)dealloc
 {
+	[boxView release];
+	[mainTextView release];
 	[textUnit release];
 	[super dealloc];
+}
+
+-(NSTextView *)createTextViewWithFrame:(NSRect)frame
+{
+	NSTextView *textView = [[NSTextView alloc] initWithFrame:frame];
+	return textView;
 }
 
 - (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString

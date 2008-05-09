@@ -7,6 +7,7 @@
 //
 
 #import "MyDocument.h"
+#import "FlippedView.h"
 #import "TextUnit.h"
 #import "TextUnitViewController.h"
 
@@ -42,7 +43,7 @@
 
 -(void)addTextUnitToEnd:(NSView *)textUnitView
 {
-	[[scrollView contentView] addSubview:textUnitView positioned:NSWindowAbove relativeTo:nil];
+	[flippedView addSubview:textUnitView];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
