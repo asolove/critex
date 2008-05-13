@@ -6,6 +6,9 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
+// TODO: set setLineHeight, setHeaderLevel
+// TODO: remove box, extra views, just init view inside passed scrolled view and 
+
 #import "TextUnitViewController.h"
 #import "TextUnit.h"
 #import "TextUnitView.h"
@@ -62,6 +65,8 @@
 											 selector:@selector(handleResizeNotification:)
 												 name:NSViewFrameDidChangeNotification
 											   object:mainTextView];
+	
+	
 	
 	[mainTextView release];
 	[translationView release];
