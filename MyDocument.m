@@ -29,16 +29,17 @@
 		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
 		[viewControllers addObject:vc];
 		
-		
 		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
 		[viewControllers addObject:vc];
 		
 		[textUnit release];
 		[vc release];
 		
-		NSRect frame = [[scrollView documentView] frame];
-		flippedView = [[FlippedView alloc] initWithFrame:frame];
-		[scrollView setDocumentView:flippedView];
+//		NSRect frame = [[scrollView documentView] frame];
+//		flippedView = [[FlippedView alloc] initWithFrame:frame];
+//		[scrollView setDocumentView:flippedView];
+//		flippedView = [scrollView documentView];
+//		[flippedView addSubview:[[NSTextView alloc] initWithFrame:NSMakeRect(50, 50, 500, 200)]];
     }
     return self;
 }
@@ -54,12 +55,19 @@
 	[flippedView addSubview:textUnitView];
 }
 
-- (void)windowControllerDidLoadNib:(NSWindowController *) aController
+- (void)windowControllerDidLoadNib:(NSWindowController *)aController
 {
     [super windowControllerDidLoadNib:aController];
 	[self addTextUnitToEnd: [[viewControllers objectAtIndex:0] view]];
 	[self addTextUnitToEnd: [[viewControllers objectAtIndex:1] view]];
+	[self addTextUnitToEnd: [[viewControllers objectAtIndex:2] view]];
 	[self reFrameTextUnitsFrom:0];
+}
+
+-(IBAction)refreshView:(id)sender
+{
+	[self reFrameTextUnitsFrom:0];
+	[flippedView setNeedsDisplay:true];
 }
 
 -(void)reFrameTextUnitsFrom:(int)start
@@ -75,6 +83,7 @@
 	
 	while(tuvc = [e nextObject]) {
 		height = [[tuvc view] frame].size.height;
+		NSLog(@"Adding item %@ with top at %d and height %d", tuvc, y, height);
 		[[tuvc view] setFrame:NSMakeRect(x, y, width, height)];
 		y += height + 5;
 	}

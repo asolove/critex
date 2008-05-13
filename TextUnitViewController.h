@@ -26,4 +26,8 @@
 -(NSTextView *)createTextViewWithFrame:(NSRect)frame;
 
 -(id)initWithTextUnit:(TextUnit *)tu;
+
+// Monitor resizing and adjust
+-(void)reframeAllTextAreas;
+-(void)handleResizeNotification:(NSNotification *)n;
 @end

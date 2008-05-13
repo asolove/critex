@@ -52,15 +52,74 @@
 	[boxView addSubview:footnoteTextView];
 	
 	NSRect boxFrame = [boxView frame];
+	
 	boxFrame.origin.y = 0;
 	boxFrame.size.height = 68;
-	[boxView setFrame:boxFrame];
+	[boxView setFrame:NSMakeRect(0, 5, [boxView frame].size.width, 80)];
+	[[self view] setFrame:NSMakeRect(0, 50, [[self view] frame].size.width, 80)];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(handleResizeNotification:)
+												 name:NSViewFrameDidChangeNotification
+											   object:mainTextView];
 	
 	[mainTextView release];
 	[translationView release];
 	[footnoteTextView release];
 	
 	return self;
+}
+
+-(void)reframeAllTextAreas
+{
+	NSRect boxFrame = [boxView frame];
+	int width = boxFrame.size.width;
+	float y = 5;
+	
+	NSRect mainFrame = [mainTextView frame];
+	[mainTextView setFrame:NSMakeRect(5.0, 5.0, width*1/3, mainFrame.size.height)];
+	y = mainFrame.size.height;
+	
+	NSLog(@"Height of main frame is %f", y);
+	
+	NSRect transFrame = [translationView frame];
+	[translationView setFrame:NSMakeRect(width*1/3 + 5, 5.0, width*2/3 - 10, transFrame.size.height)];
+	if (y < transFrame.size.height) {
+		y = transFrame.size.height;
+	}
+	
+	NSLog(@"Height of translation frame is %f", y);
+	NSLog(@"Height of tallest frame is %f", y);
+	
+	NSRect noteFrame = [footnoteTextView frame];
+	[footnoteTextView setFrame:NSMakeRect(5.0, y + 5, width - 15, noteFrame.size.height)];	
+	NSLog(@"Putting footnotes at y: %f, height: %f", y, noteFrame.size.height);
+	
+	boxFrame = [boxView frame];
+	boxFrame.size.height = y + noteFrame.size.height + 10;
+	boxFrame.origin.y = 0;
+	boxFrame.origin.x = 0;
+	NSLog(@"Changing box %@ to frame y: %f, x: %f, height: %f, width: %f", boxView, boxFrame.origin.y, boxFrame.origin.x, boxFrame.size.height, boxFrame.size.width);
+	[boxView setFrame:boxFrame];
+	[boxView setNeedsDisplay:true];
+	
+	[[boxView contentView] setFrame:boxFrame];
+	[[boxView contentView] setNeedsDisplay:true];
+	
+	NSRect viewFrame = [[self view] frame];
+	viewFrame.origin.y = 5;
+	viewFrame.size.height = y + noteFrame.size.height + 20;
+	[[self view] setFrame:viewFrame];
+	NSLog(@"Changing view frame for: %@ to frame y: %f, x: %f, height: %f, width: %f", boxView, viewFrame.origin.y, viewFrame.origin.x, viewFrame.size.height, viewFrame.size.width);
+	
+	[[self view] setNeedsDisplay:true];
+	
+}
+
+-(void)handleResizeNotification:(NSNotification *)n
+{
+	NSLog(@"Send a %@ notification for %@", [n name], [n object]);
+	[self reframeAllTextAreas];
 }
 
 -(void)dealloc
