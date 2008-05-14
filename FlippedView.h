@@ -1,8 +1,8 @@
 //
 //  FlippedView.h
-//  ViewTest
+//  Critex
 //
-//  Created by Adam Solove on 5/6/08.
+//  Created by Adam Solove on 5/13/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 

@@ -1,0 +1,115 @@
+// !$*UTF8*$!
+{
+	2A37F4A9FDCFA73011CA2CEA /* Project object */ = {
+		activeArchitecture = i386;
+		activeBuildConfigurationName = Release;
+		activeExecutable = 344BFAF90DDA5CEB00C3A003 /* Critex */;
+		activeTarget = 8D15AC270486D014006FF6A4 /* Critex */;
+		addToTargets = (
+			8D15AC270486D014006FF6A4 /* Critex */,
+		);
+		codeSenseManager = 344BFB060DDA5D0A00C3A003 /* Code sense */;
+		executables = (
+			344BFAF90DDA5CEB00C3A003 /* Critex */,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 232414443;
+			PBXWorkspaceStateSaveDate = 232414443;
+		};
+		sourceControlManager = 344BFB050DDA5D0A00C3A003 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1436, 1316}}";
+			sepNavSelRange = "{1572, 0}";
+			sepNavVisRange = "{890, 1391}";
+		};
+	};
+	2A37F4AEFDCFA73011CA2CEA /* MyDocument.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {788, 399}}";
+			sepNavSelRange = "{284, 0}";
+			sepNavVisRange = "{0, 292}";
+		};
+	};
+	344BFAF90DDA5CEB00C3A003 /* Critex */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = Critex;
+		savedGlobals = {
+		};
+		sourceDirectories = (
+		);
+	};
+	344BFB050DDA5D0A00C3A003 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	344BFB060DDA5D0A00C3A003 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	344BFB070DDA5E6900C3A003 /* FlippedView.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {542, 263}}";
+			sepNavSelRange = "{199, 18}";
+			sepNavVisRange = "{0, 223}";
+		};
+	};
+	344BFB080DDA5E6900C3A003 /* FlippedView.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {788, 422}}";
+			sepNavSelRange = "{2, 0}";
+			sepNavVisRange = "{0, 233}";
+		};
+	};
+	344BFB180DDA623500C3A003 /* TextUnit.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {788, 422}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 434}";
+		};
+	};
+	344BFB1A0DDA623500C3A003 /* TextUnitViewController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {788, 434}}";
+			sepNavSelRange = "{415, 0}";
+			sepNavVisRange = "{0, 652}";
+		};
+	};
+	344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {788, 1624}}";
+			sepNavSelRange = "{2775, 0}";
+			sepNavVisRange = "{275, 927}";
+		};
+	};
+	8D15AC270486D014006FF6A4 /* Critex */ = {
+		activeExec = 0;
+		executables = (
+			344BFAF90DDA5CEB00C3A003 /* Critex */,
+		);
+	};
+}

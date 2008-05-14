@@ -1,8 +1,8 @@
 //
 //  main.m
-//  TextUnit
+//  Critex
 //
-//  Created by Adam Solove on 5/2/08.
+//  Created by Adam Solove on 5/13/08.
 //  Copyright __MyCompanyName__ 2008 . All rights reserved.
 //
 

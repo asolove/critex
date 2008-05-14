@@ -1,8 +1,8 @@
 //
 //  MyDocument.m
-//  TextUnit
+//  Critex
 //
-//  Created by Adam Solove on 5/2/08.
+//  Created by Adam Solove on 5/13/08.
 //  Copyright __MyCompanyName__ 2008 . All rights reserved.
 //
 
@@ -17,93 +17,42 @@
 {
     self = [super init];
     if (self) {
-		TextUnit *textUnit = [[TextUnit alloc] init];
-		viewControllers = [[NSMutableArray alloc] init];
-		
-		TextUnitViewController* vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
-		[viewControllers addObject:vc];
-		
-		textUnit = [[TextUnit alloc] initWithStringForMain:@"Main text"
-												translated:@"Trans. text"
-												 footnotes:@"Footnotes text"];
-		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
-		[viewControllers addObject:vc];
-		
-		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
-		[viewControllers addObject:vc];
-		
-		[textUnit release];
-		[vc release];
-		
-//		NSRect frame = [[scrollView documentView] frame];
-//		flippedView = [[FlippedView alloc] initWithFrame:frame];
-//		[scrollView setDocumentView:flippedView];
-//		flippedView = [scrollView documentView];
-//		[flippedView addSubview:[[NSTextView alloc] initWithFrame:NSMakeRect(50, 50, 500, 200)]];
     }
     return self;
 }
 
--(void)dealloc
-{
-	[viewControllers release];
-	[super dealloc];
-}
-
--(void)addTextUnitToEnd:(NSView *)textUnitView
-{
-	[flippedView addSubview:textUnitView];
-}
-
-- (void)windowControllerDidLoadNib:(NSWindowController *)aController
-{
-    [super windowControllerDidLoadNib:aController];
-	[self addTextUnitToEnd: [[viewControllers objectAtIndex:0] view]];
-	[self addTextUnitToEnd: [[viewControllers objectAtIndex:1] view]];
-	[self addTextUnitToEnd: [[viewControllers objectAtIndex:2] view]];
-	[self reFrameTextUnitsFrom:0];
-}
-
--(IBAction)refreshView:(id)sender
-{
-	[self reFrameTextUnitsFrom:0];
-	[flippedView setNeedsDisplay:true];
-}
-
--(void)reFrameTextUnitsFrom:(int)start
-{
-	int y = 5;
-	int x = 5;
-	int height = 0;
-	int width = [flippedView frame].size.width - 10;
-	
-	// ignore start for now and just re-place all of them
-	NSEnumerator *e = [viewControllers objectEnumerator];
-	TextUnitViewController *tuvc;
-	
-	while(tuvc = [e nextObject]) {
-		height = [[tuvc view] frame].size.height;
-		NSLog(@"Adding item %@ with top at %d and height %d", tuvc, y, height);
-		[[tuvc view] setFrame:NSMakeRect(x, y, width, height)];
-		y += height + 5;
-	}
-}
-
--(IBAction)textViewSize:(id)sender
-{
-	NSTextView *textView = [[viewControllers objectAtIndex:0] valueForKey:@"mainTextView"];
-	NSRect rect = [textView bounds];
-	NSSize size = rect.size;
-	NSNumber *height = [NSNumber numberWithFloat:size.height];
-	NSNumber *width = [NSNumber numberWithFloat:size.width];
-	NSLog(@"Text view for main notes is %@ by %@", height, width);
-}
-
-// Genrated Code
-
 - (NSString *)windowNibName
 {
+    // Override returning the nib file name of the document
+    // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
     return @"MyDocument";
+}
+
+- (void)windowControllerDidLoadNib:(NSWindowController *) aController
+{
+    [super windowControllerDidLoadNib:aController];
+	
+	
+	
+	TextUnit *textUnit = [[TextUnit alloc] init];
+	viewControllers = [[NSMutableArray alloc] init];
+	
+	TextUnitViewController* vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit
+																			 view:contentView
+																		  originX:20];
+	[viewControllers addObject:vc];
+	
+	//		textUnit = [[TextUnit alloc] initWithStringForMain:@"Main text"
+	//												translated:@"Trans. text"
+	//												 footnotes:@"Footnotes text"];
+	//		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
+	//		[viewControllers addObject:vc];
+	//		
+	//		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
+	//		[viewControllers addObject:vc];
+	
+	[textUnit release];
+	[vc release];
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError

@@ -11,23 +11,20 @@
 @class TextUnitView;
 @class FlippedView;
 
-@interface TextUnitViewController : NSViewController {
-	TextUnit *textUnit;
-	NSBox *boxView;
+@interface TextUnitViewController : NSObject {
 	NSTextView *mainTextView;
 	NSTextView *translationView;
 	NSTextView *footnoteTextView;
+	TextUnit   *textUnit;
+	NSView	   *view;	
+	NSBox *separator;
 }
-@property (retain) TextUnit *textUnit;
 
-- (BOOL)textView:(NSTextView *)aTextView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
--(IBAction)createFootnoteForSelection:(id)sender;
--(void)createFootnoteForRange:(NSRange)range;
+-(id)initWithTextUnit:(TextUnit *)tu
+				 view:(NSView *)view
+			  originX:(int)x;
 -(NSTextView *)createTextViewWithFrame:(NSRect)frame;
 
--(id)initWithTextUnit:(TextUnit *)tu;
-
-// Monitor resizing and adjust
--(void)reframeAllTextAreas;
 -(void)handleResizeNotification:(NSNotification *)n;
+-(void)reframeTextAreas;
 @end

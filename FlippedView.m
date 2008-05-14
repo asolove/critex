@@ -1,8 +1,8 @@
 //
 //  FlippedView.m
-//  ViewTest
+//  Critex
 //
-//  Created by Adam Solove on 5/6/08.
+//  Created by Adam Solove on 5/13/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
@@ -11,9 +11,8 @@
 
 @implementation FlippedView
 
--(BOOL)isFlipped
+-(BOOL)isFlipped 
 {
-	return TRUE;
+	return true;
 }
-
 @end
