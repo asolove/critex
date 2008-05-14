@@ -9,10 +9,26 @@
 
 #import <Cocoa/Cocoa.h>
 @class FlippedView;
+@class TextUnit;
 
 @interface MyDocument : NSDocument
 {
 	IBOutlet NSView *contentView;
+	IBOutlet NSScrollView *scrollView;
 	NSMutableArray *viewControllers;
 }
+
+// Add a text block to the end
+-(IBAction)appendTextUnitViewController:(id)sender;
+-(void)appendControllerForTextUnit:(TextUnit *)tu;
+
+// Adjust tops of all views
+-(IBAction)reframeAllTextAreasAction:(id)sender;
+-(void)reframeAllTextAreas;
+
+// Change frame of the content view when items are added or removed.
+-(void)setContentViewHeightTo:(int)height;
+-(void)setContentViewHeightToFit;
+-(int)bottom;
+
 @end

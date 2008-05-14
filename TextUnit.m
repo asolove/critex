@@ -12,9 +12,9 @@
 
 - (id)init
 {
-	return [self initWithStringForMain:@"王來紹上帝，自服於土中。旦曰：『其作大邑，其自時配皇天；毖祀於上下，其自時中乂，王厥有成命，治民今休。』王先服殷御事，比介於我有周御事。節性，惟日其邁；王敬作所，不可不敬德。」"
-							translated:@"The King comes to make divination to the lord on high. regarding his exercising submission on the middle of the Earth. Dan says: 'They have made the great city. They from this time they will be added to sovereign heaven, carefully sacrificing above and below. They from this time will hit the mark of peace. The king has now fulfilled the mandate. He governs the people so that they become virtuous."
-							 footnotes:@"These are the footnotes"];
+	return [self initWithStringForMain:@" "
+							translated:@" "
+							 footnotes:@" "];
 }
 
 -(id)initWithStringForMain: (NSString *)mainString
@@ -27,14 +27,36 @@
 		NSArray *keys = [NSArray arrayWithObject: NSFontAttributeName];
 		NSDictionary *textAttributes = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 		
+		objects = [NSArray arrayWithObject:[NSFont fontWithName:@"Baskerville" size:14]];
+		keys = [NSArray arrayWithObject: NSFontAttributeName];
+		NSDictionary *noteAttributes = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+		
 		mainText = [[NSMutableAttributedString alloc] initWithString:mainString
 														  attributes:textAttributes];
 		translationText = [[NSMutableAttributedString alloc] initWithString:translationString
 																attributes:textAttributes];
-		footnoteText = [[NSMutableAttributedString alloc] initWithString:footnotesString];
+		footnoteText = [[NSMutableAttributedString alloc] initWithString:footnotesString
+															  attributes:noteAttributes];
 	}
 	return self;
 	
+}
+
+
+-(void)encodeWithCoder:(NSCoder *)coder
+{
+	[coder encodeObject:mainText forKey:@"mainText"];
+	[coder encodeObject:translationText forKey:@"translationText"];
+	[coder encodeObject:footnoteText forKey:@"footnoteText"];
+}
+
+-(id)initWithCoder:(NSCoder *)coder
+{
+	[super init];
+	mainText		= [coder decodeObjectForKey:@"mainText"];
+	translationText = [coder decodeObjectForKey:@"translationText"];
+	footnoteText	= [coder decodeObjectForKey:@"footnoteText"];
+	return self;
 }
 
 -(void)dealloc

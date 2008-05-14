@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		344BFB090DDA5E6900C3A003 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB080DDA5E6900C3A003 /* FlippedView.m */; };
-		344BFB1C0DDA623500C3A003 /* TextUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB190DDA623500C3A003 /* TextUnit.m */; };
 		344BFB1D0DDA623500C3A003 /* TextUnitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */; };
 		344BFB720DDA6E7300C3A003 /* TextUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB710DDA6E7300C3A003 /* TextUnit.m */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
@@ -35,8 +34,6 @@
 		32DBCF750370BD2300C91783 /* Critex_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Critex_Prefix.pch; sourceTree = "<group>"; };
 		344BFB070DDA5E6900C3A003 /* FlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlippedView.h; sourceTree = "<group>"; };
 		344BFB080DDA5E6900C3A003 /* FlippedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlippedView.m; sourceTree = "<group>"; };
-		344BFB180DDA623500C3A003 /* TextUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextUnit.h; sourceTree = "<group>"; };
-		344BFB190DDA623500C3A003 /* TextUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextUnit.m; sourceTree = "<group>"; };
 		344BFB1A0DDA623500C3A003 /* TextUnitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextUnitViewController.h; sourceTree = "<group>"; };
 		344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextUnitViewController.m; sourceTree = "<group>"; };
 		344BFB700DDA6E7300C3A003 /* TextUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextUnit.h; sourceTree = "<group>"; };
@@ -101,8 +98,6 @@
 			children = (
 				344BFB700DDA6E7300C3A003 /* TextUnit.h */,
 				344BFB710DDA6E7300C3A003 /* TextUnit.m */,
-				344BFB180DDA623500C3A003 /* TextUnit.h */,
-				344BFB190DDA623500C3A003 /* TextUnit.m */,
 				344BFB1A0DDA623500C3A003 /* TextUnitViewController.h */,
 				344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */,
 				2A37F4AEFDCFA73011CA2CEA /* MyDocument.h */,
@@ -210,7 +205,6 @@
 				8D15AC310486D014006FF6A4 /* MyDocument.m in Sources */,
 				8D15AC320486D014006FF6A4 /* main.m in Sources */,
 				344BFB090DDA5E6900C3A003 /* FlippedView.m in Sources */,
-				344BFB1C0DDA623500C3A003 /* TextUnit.m in Sources */,
 				344BFB1D0DDA623500C3A003 /* TextUnitViewController.m in Sources */,
 				344BFB720DDA6E7300C3A003 /* TextUnit.m in Sources */,
 			);

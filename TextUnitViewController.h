@@ -17,7 +17,9 @@
 	NSTextView *footnoteTextView;
 	TextUnit   *textUnit;
 	NSView	   *view;	
-	NSBox *separator;
+	int			bottom;
+	NSBox	   *separator;
+	BOOL		isResizing;
 }
 
 -(id)initWithTextUnit:(TextUnit *)tu
@@ -27,4 +29,10 @@
 
 -(void)handleResizeNotification:(NSNotification *)n;
 -(void)reframeTextAreas;
+-(void)reframeTextAreasAtY:(int)y;
+-(int)bottom;
+
+
+-(void)encodeWithCoder:(NSCoder *)coder;
+-(id)initWithCoder:(NSCoder *)coder;
 @end

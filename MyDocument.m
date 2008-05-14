@@ -17,6 +17,7 @@
 {
     self = [super init];
     if (self) {
+		viewControllers = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -32,37 +33,84 @@
 {
     [super windowControllerDidLoadNib:aController];
 	
+	[scrollView setDocumentView:contentView];
 	
-	
+	if ([viewControllers count] > 0) {
+		NSLog(@"Opening a saved document");
+		
+	} else {
+		[self appendTextUnitViewController:self];
+	}
+}
+
+-(IBAction)appendTextUnitViewController:(id)sender
+{
 	TextUnit *textUnit = [[TextUnit alloc] init];
-	viewControllers = [[NSMutableArray alloc] init];
+	[self appendControllerForTextUnit:textUnit];
+}
+
+-(void)appendControllerForTextUnit:(TextUnit *)tu
+{
+	int bottom = [self bottom];
 	
-	TextUnitViewController* vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit
+	TextUnitViewController* vc = [[TextUnitViewController alloc] initWithTextUnit:tu
 																			 view:contentView
-																		  originX:20];
+																		  originX:bottom];
+	
 	[viewControllers addObject:vc];
 	
-	//		textUnit = [[TextUnit alloc] initWithStringForMain:@"Main text"
-	//												translated:@"Trans. text"
-	//												 footnotes:@"Footnotes text"];
-	//		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
-	//		[viewControllers addObject:vc];
-	//		
-	//		vc = [[TextUnitViewController alloc] initWithTextUnit:textUnit];
-	//		[viewControllers addObject:vc];
-	
-	[textUnit release];
 	[vc release];
+	[tu release];
+	[self setContentViewHeightToFit];
+}
+
+-(IBAction)reframeAllTextAreasAction:(id)sender
+{
+	[self reframeAllTextAreas];
+}
+
+-(void)reframeAllTextAreas
+{
+	NSEnumerator *e = [viewControllers objectEnumerator];
+	TextUnitViewController *tuvc;
+	int bottom = 0;
+	
+	while(tuvc = [e nextObject]) {
+		[tuvc reframeTextAreasAtY:bottom];
+		bottom = [tuvc bottom];
+	}
+	
+}
+
+-(void)setContentViewHeightToFit
+{
+	int bottom = [self bottom];
+	[self setContentViewHeightTo: bottom + 5];
+}
+
+-(void)setContentViewHeightTo:(int)height
+{
+	NSRect frame = [contentView frame];
+	frame.size.height = height;
+	[contentView setFrame:frame];
+	NSLog(@"Setting content height to %d", height);
+}
+
+-(int)bottom
+{
+	TextUnitViewController *tu;
+	if(tu = [viewControllers lastObject]) {
+		return [tu bottom];
+	} else {
+		return 0;
+	}
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
-    // Insert code here to write your document to data of the specified type. If the given outError != NULL, ensure that you set *outError when returning nil.
 
-    // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-
-    // For applications targeted for Panther or earlier systems, you should use the deprecated API -dataRepresentationOfType:. In this case you can also choose to override -fileWrapperRepresentationOfType: or -writeToFile:ofType: instead.
-
+	return [NSKeyedArchiver archivedDataWithRootObject: viewControllers];
+	
     if ( outError != NULL ) {
 		*outError = [NSError errorWithDomain:NSOSStatusErrorDomain code:unimpErr userInfo:NULL];
 	}

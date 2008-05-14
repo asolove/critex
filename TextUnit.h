@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface TextUnit : NSObject {
+@interface TextUnit : NSObject <NSCoding> {
 	NSTextStorage *mainText;
 	NSTextStorage *translationText;
 	NSTextStorage *footnoteText;
@@ -18,5 +18,9 @@
 -(id)initWithStringForMain: (NSString *)mainString
 				translated: (NSString *)translationString
 				 footnotes: (NSString *)footnotesString;
+
+// Encoding and deencoding
+-(void)encodeWithCoder:(NSCoder *)coder;
+-(id)initWithCoder:(NSCoder *)coder;
 
 @end
