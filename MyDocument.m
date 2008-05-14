@@ -18,6 +18,7 @@
     self = [super init];
     if (self) {
 		viewControllers = [[NSMutableArray alloc] init];
+		isResizing = false;
     }
     return self;
 }
@@ -57,13 +58,27 @@
 																			 view:contentView
 																		  originX:bottom];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(handleResizeNotification:)
+												 name:NSViewFrameDidChangeNotification
+											   object:[vc valueForKey:@"footnoteTextView"]];
+	
 	[viewControllers addObject:vc];
 	
 	[vc release];
 	[tu release];
 	[self setContentViewHeightToFit];
 }
-
+	 
+	 
+-(void)handleResizeNotification:(NSNotification *)n
+{
+	if (!isResizing)
+	{	
+		[self reframeAllTextAreas];
+	}
+}
+	 
 -(IBAction)reframeAllTextAreasAction:(id)sender
 {
 	[self reframeAllTextAreas];
@@ -71,6 +86,7 @@
 
 -(void)reframeAllTextAreas
 {
+	isResizing = true;
 	NSEnumerator *e = [viewControllers objectEnumerator];
 	TextUnitViewController *tuvc;
 	int bottom = 0;
@@ -79,7 +95,8 @@
 		[tuvc reframeTextAreasAtY:bottom];
 		bottom = [tuvc bottom];
 	}
-	
+	[self setContentViewHeightToFit];
+	isResizing = false;
 }
 
 -(void)setContentViewHeightToFit
@@ -93,7 +110,6 @@
 	NSRect frame = [contentView frame];
 	frame.size.height = height;
 	[contentView setFrame:frame];
-	NSLog(@"Setting content height to %d", height);
 }
 
 -(int)bottom

@@ -16,11 +16,15 @@
 	IBOutlet NSView *contentView;
 	IBOutlet NSScrollView *scrollView;
 	NSMutableArray *viewControllers;
+	BOOL isResizing;
 }
 
 // Add a text block to the end
 -(IBAction)appendTextUnitViewController:(id)sender;
 -(void)appendControllerForTextUnit:(TextUnit *)tu;
+
+// Notified of text view's frame size changing
+-(void)handleResizeNotification:(NSNotification *)n;
 
 // Adjust tops of all views
 -(IBAction)reframeAllTextAreasAction:(id)sender;

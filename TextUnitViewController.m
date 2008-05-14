@@ -76,7 +76,6 @@
 											   object:footnoteTextView];
 	
 	isResizing = false;
-	NSLog(@"Done with creating this controller");
 	
 	[mainTextView release];
 	[translationView release];
