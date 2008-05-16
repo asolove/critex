@@ -9,6 +9,7 @@
 #import "TextUnit.h"
 
 @implementation TextUnit
+@synthesize mainText, translationText, footnoteText;
 
 - (id)init
 {
@@ -31,12 +32,12 @@
 		keys = [NSArray arrayWithObject: NSFontAttributeName];
 		NSDictionary *noteAttributes = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 		
-		mainText = [[NSMutableAttributedString alloc] initWithString:mainString
-														  attributes:textAttributes];
-		translationText = [[NSMutableAttributedString alloc] initWithString:translationString
-																attributes:textAttributes];
-		footnoteText = [[NSMutableAttributedString alloc] initWithString:footnotesString
-															  attributes:noteAttributes];
+		[self setMainText:[[NSMutableAttributedString alloc] initWithString:mainString
+														  attributes:textAttributes]];
+		[self setTranslationText:[[NSMutableAttributedString alloc] initWithString:translationString
+																attributes:textAttributes]];
+		[self setFootnoteText:[[NSMutableAttributedString alloc] initWithString:footnotesString
+															  attributes:noteAttributes]];
 	}
 	return self;
 	
@@ -53,9 +54,9 @@
 -(id)initWithCoder:(NSCoder *)coder
 {
 	[super init];
-	mainText		= [coder decodeObjectForKey:@"mainText"];
-	translationText = [coder decodeObjectForKey:@"translationText"];
-	footnoteText	= [coder decodeObjectForKey:@"footnoteText"];
+	[self setMainText:[coder decodeObjectForKey:@"mainText"]];
+	[self setTranslationText:[coder decodeObjectForKey:@"translationText"]];
+	[self setFootnoteText:[coder decodeObjectForKey:@"footnoteText"]];
 	return self;
 }
 

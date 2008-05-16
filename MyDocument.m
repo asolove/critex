@@ -6,6 +6,14 @@
 //  Copyright __MyCompanyName__ 2008 . All rights reserved.
 //
 
+// TODO:
+//
+// As you add the text fields remember the last one you added. 
+// When you add another use the setNextKeyView: message on the previous 
+// item to add the new one to the end of the key view loop. If you are making 
+// the window or all of it's useful content programatically then you can use 
+// setInitialFirstRepsonder: on that window to point to the first of your text fields.
+
 #import "MyDocument.h"
 #import "FlippedView.h"
 #import "TextUnit.h"
@@ -13,11 +21,14 @@
 
 @implementation MyDocument
 
+@synthesize textUnits, viewControllers;
+
 - (id)init
 {
     self = [super init];
     if (self) {
 		viewControllers = [[NSMutableArray alloc] init];
+		textUnits = [[NSMutableArray alloc] init];
 		isResizing = false;
     }
     return self;
@@ -36,9 +47,15 @@
 	
 	[scrollView setDocumentView:contentView];
 	
-	if ([viewControllers count] > 0) {
+	if ([textUnits count] > 0) {
 		NSLog(@"Opening a saved document");
 		
+		// Add controllers for all text units opened at save:		
+		NSEnumerator *e = [textUnits objectEnumerator];
+		TextUnit *tu;
+		while (tu = [e nextObject]) {
+			[self appendControllerForTextUnit:tu];
+		}
 	} else {
 		[self appendTextUnitViewController:self];
 	}
@@ -47,6 +64,7 @@
 -(IBAction)appendTextUnitViewController:(id)sender
 {
 	TextUnit *textUnit = [[TextUnit alloc] init];
+	[textUnits addObject:textUnit];
 	[self appendControllerForTextUnit:textUnit];
 }
 
@@ -125,22 +143,27 @@
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
 
-	return [NSKeyedArchiver archivedDataWithRootObject: viewControllers];
+	return [NSKeyedArchiver archivedDataWithRootObject: textUnits];
 	
     if ( outError != NULL ) {
 		*outError = [NSError errorWithDomain:NSOSStatusErrorDomain code:unimpErr userInfo:NULL];
 	}
-	return nil;
 }
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
-{
-    // Insert code here to read your document from the given data of the specified type.  If the given outError != NULL, ensure that you set *outError when returning NO.
-
-    // You can also choose to override -readFromFileWrapper:ofType:error: or -readFromURL:ofType:error: instead. 
-    
-    // For applications targeted for Panther or earlier systems, you should use the deprecated API -loadDataRepresentation:ofType. In this case you can also choose to override -readFromFile:ofType: or -loadFileWrapperRepresentation:ofType: instead.
-    
+{	
+    NSMutableArray *newTextUnits;
+	newTextUnits = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+	
+	viewControllers = [[NSMutableArray alloc] init];
+	textUnits = [[NSMutableArray alloc] init];
+	
+	if (newTextUnits == nil) {
+		NSLog(@"unarchive failed");
+	} else {	
+		[self setTextUnits:newTextUnits];
+	}
+	
     if ( outError != NULL ) {
 		*outError = [NSError errorWithDomain:NSOSStatusErrorDomain code:unimpErr userInfo:NULL];
 	}

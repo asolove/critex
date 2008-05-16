@@ -14,6 +14,9 @@
 	NSTextStorage *translationText;
 	NSTextStorage *footnoteText;
 }
+@property(retain) NSTextStorage *mainText;
+@property(retain) NSTextStorage *translationText;
+@property(retain) NSTextStorage *footnoteText;
 
 -(id)initWithStringForMain: (NSString *)mainString
 				translated: (NSString *)translationString

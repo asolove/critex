@@ -16,8 +16,11 @@
 	IBOutlet NSView *contentView;
 	IBOutlet NSScrollView *scrollView;
 	NSMutableArray *viewControllers;
+	NSMutableArray *textUnits;
 	BOOL isResizing;
 }
+@property(retain) NSMutableArray *textUnits;
+@property(retain) NSMutableArray *viewControllers;
 
 // Add a text block to the end
 -(IBAction)appendTextUnitViewController:(id)sender;

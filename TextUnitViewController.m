@@ -50,6 +50,12 @@
 		   withKeyPath:@"footnoteText"
 			   options:nil];
 	
+	[mainTextView setNextKeyView:translationView];
+	[translationView setNextKeyView:footnoteTextView];
+	[footnoteTextView setNextKeyView:mainTextView];
+	
+	// TODO: Add code to intercept tab characters and move the key view.
+	
 	isResizing = true;
 	
 	[view addSubview:mainTextView];
