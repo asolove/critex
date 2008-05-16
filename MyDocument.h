@@ -38,4 +38,7 @@
 -(void)setContentViewHeightToFit;
 -(int)bottom;
 
+// Menu items for formatting tuvc's
+-(IBAction)setKeyTextUnitToHeader:(id)sender;
+-(IBAction)nextKeyView:(id)sender;
 @end

@@ -170,4 +170,16 @@
     return YES;
 }
 
+// Menu items
+
+// exploratory
+-(IBAction)setKeyTextUnitToHeader:(id)sender
+{
+	
+}
+	 
+-(IBAction)nextKeyView:(id)sender
+{
+	[[scrollView window] selectNextKeyView:self];
+}
 @end

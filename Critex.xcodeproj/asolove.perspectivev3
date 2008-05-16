@@ -314,7 +314,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>344BFBA20DDA935C00C3A003</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>TextUnitViewController.m</string>
+								<string>MyDocument.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -322,60 +322,26 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>344BFBA30DDA935C00C3A003</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>TextUnitViewController.m</string>
+										<string>MyDocument.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>349249030DDD112200E370D3</string>
+										<string>3492498B0DDD197900E370D3</string>
 										<key>history</key>
 										<array>
-											<string>344BFBA40DDA935C00C3A003</string>
-											<string>3492489F0DDD08D000E370D3</string>
-											<string>349248DB0DDD0C4200E370D3</string>
-											<string>349248E90DDD0CF300E370D3</string>
-											<string>349248F60DDD0E3A00E370D3</string>
-											<string>349248FB0DDD0F0500E370D3</string>
-											<string>349248FC0DDD0F0500E370D3</string>
+											<string>3492497A0DDD182200E370D3</string>
+											<string>349249880DDD197900E370D3</string>
+											<string>349249890DDD197900E370D3</string>
 										</array>
 										<key>prevStack</key>
 										<array>
-											<string>344BFBAA0DDA935C00C3A003</string>
-											<string>344BFBBB0DDA935C00C3A003</string>
-											<string>344BFBBF0DDA935C00C3A003</string>
-											<string>344BFBC30DDA935C00C3A003</string>
-											<string>344BFC3D0DDA99AD00C3A003</string>
-											<string>344BFC7C0DDAA1EA00C3A003</string>
-											<string>344BFCE60DDAA9F600C3A003</string>
-											<string>349248A30DDD08D000E370D3</string>
-											<string>349248A40DDD08D000E370D3</string>
-											<string>349248A50DDD08D000E370D3</string>
-											<string>349248A60DDD08D000E370D3</string>
-											<string>349248A70DDD08D000E370D3</string>
-											<string>349248A80DDD08D000E370D3</string>
-											<string>349248A90DDD08D000E370D3</string>
-											<string>349248B40DDD0A0200E370D3</string>
-											<string>349248B50DDD0A0200E370D3</string>
-											<string>349248B60DDD0A0200E370D3</string>
-											<string>349248B70DDD0A0200E370D3</string>
-											<string>349248B80DDD0A0200E370D3</string>
-											<string>349248BF0DDD0A9B00E370D3</string>
-											<string>349248C80DDD0B9C00E370D3</string>
-											<string>349248C90DDD0B9C00E370D3</string>
-											<string>349248CA0DDD0B9C00E370D3</string>
-											<string>349248CB0DDD0B9C00E370D3</string>
-											<string>349248CC0DDD0B9C00E370D3</string>
-											<string>349248CD0DDD0B9C00E370D3</string>
-											<string>349248CE0DDD0B9C00E370D3</string>
-											<string>349248CF0DDD0B9C00E370D3</string>
-											<string>349248D00DDD0B9C00E370D3</string>
-											<string>349248D60DDD0BED00E370D3</string>
-											<string>349248D70DDD0BED00E370D3</string>
-											<string>349248DD0DDD0C4200E370D3</string>
-											<string>349248DE0DDD0C4200E370D3</string>
-											<string>349248EB0DDD0CF300E370D3</string>
-											<string>349248EC0DDD0CF300E370D3</string>
-											<string>349248F80DDD0E3A00E370D3</string>
-											<string>349248FD0DDD0F0500E370D3</string>
+											<string>349249600DDD164500E370D3</string>
+											<string>3492497D0DDD182200E370D3</string>
+											<string>3492497E0DDD182200E370D3</string>
+											<string>3492497F0DDD182200E370D3</string>
+											<string>349249800DDD182200E370D3</string>
+											<string>349249840DDD191100E370D3</string>
+											<string>3492498A0DDD197900E370D3</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
