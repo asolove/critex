@@ -59,6 +59,8 @@
 	} else {
 		[self appendTextUnitViewController:self];
 	}
+	NSTextView *first = [[viewControllers objectAtIndex:0] valueForKey:@"mainTextView"];
+	[[first window] makeFirstResponder:first];
 }
 
 -(IBAction)appendTextUnitViewController:(id)sender
@@ -175,7 +177,8 @@
 // exploratory
 -(IBAction)setKeyTextUnitToHeader:(id)sender
 {
-	
+	// how do we get to the controller when we only have the text view?
+	NSLog(@"Received 		  -(IBAction)setKeyTextUnitToHeader:(id)sender; in doc");
 }
 	 
 -(IBAction)nextKeyView:(id)sender

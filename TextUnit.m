@@ -15,12 +15,14 @@
 {
 	return [self initWithStringForMain:@" "
 							translated:@" "
-							 footnotes:@" "];
+							 footnotes:@" "
+								 level:0];
 }
 
 -(id)initWithStringForMain: (NSString *)mainString
 				translated: (NSString *)translationString
 				 footnotes: (NSString *)footnotesString
+					 level: (int)initLevel
 {
 	self = [super init];
     if (self) {		
@@ -38,9 +40,21 @@
 																attributes:textAttributes]];
 		[self setFootnoteText:[[NSMutableAttributedString alloc] initWithString:footnotesString
 															  attributes:noteAttributes]];
+		[self setLevel: initLevel];
 	}
 	return self;
 	
+}
+
+
+-(id)initWithStringForMain: (NSString *)mainString
+				translated: (NSString *)translationString
+				 footnotes: (NSString *)footnotesString
+{
+	return [self initWithStringForMain: mainString
+							translated: translationString
+							 footnotes: footnotesString
+								 level: 0];
 }
 
 
@@ -58,6 +72,17 @@
 	[self setTranslationText:[coder decodeObjectForKey:@"translationText"]];
 	[self setFootnoteText:[coder decodeObjectForKey:@"footnoteText"]];
 	return self;
+}
+
+-(int)level
+{
+	return level;
+}
+
+-(void)setLevel:(int)l
+{
+	level = l;
+	NSLog(@"Set level to %d", l);
 }
 
 -(void)dealloc

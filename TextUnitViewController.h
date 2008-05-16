@@ -32,6 +32,10 @@
 -(void)reframeTextAreasAtY:(int)y;
 -(int)bottom;
 
+-(IBAction)setKeyTextUnitToHeader:(id)sender;
+
+-(BOOL)textView:(NSTextView *)aTextView 
+doCommandBySelector: (SEL)aSelector;
 
 -(void)encodeWithCoder:(NSCoder *)coder;
 -(id)initWithCoder:(NSCoder *)coder;

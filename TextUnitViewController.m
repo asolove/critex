@@ -54,7 +54,10 @@
 	[translationView setNextKeyView:footnoteTextView];
 	[footnoteTextView setNextKeyView:mainTextView];
 	
-	// TODO: Add code to intercept tab characters and move the key view.
+	// As delegate: intercept tabs adn other special chars we want to handle.
+	[mainTextView setDelegate:self];
+	[translationView setDelegate:self];
+	[footnoteTextView setDelegate:self];
 	
 	isResizing = true;
 	
@@ -89,6 +92,23 @@
 	
 	
 	return self;
+}
+
+// Delegate method for handling special chars in text views
+
+-(BOOL)textView:(NSTextView *)aTextView 
+doCommandBySelector:(SEL)aSelector
+{
+	if(aSelector == @selector(insertTab:)) {
+		[[aTextView window] selectNextKeyView:self];
+		return YES;
+	}
+    return NO;
+}
+
+-(IBAction)setKeyTextUnitToHeader:(id)sender
+{
+	[textUnit setLevel:4];
 }
 
 -(void)handleResizeNotification:(NSNotification *)n
