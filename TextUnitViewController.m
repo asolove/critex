@@ -54,6 +54,7 @@
 	[translationView setNextKeyView:footnoteTextView];
 	[footnoteTextView setNextKeyView:mainTextView];
 	
+	
 	// As delegate: intercept tabs adn other special chars we want to handle.
 	[mainTextView setDelegate:self];
 	[translationView setDelegate:self];
@@ -106,7 +107,7 @@ doCommandBySelector:(SEL)aSelector
     return NO;
 }
 
--(IBAction)setKeyTextUnitToHeader:(id)sender
+-(IBAction)setTextUnitToHeader:(id)sender
 {
 	[textUnit setLevel:4];
 }

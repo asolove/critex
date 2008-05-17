@@ -178,7 +178,10 @@
 -(IBAction)setKeyTextUnitToHeader:(id)sender
 {
 	// how do we get to the controller when we only have the text view?
-	NSLog(@"Received 		  -(IBAction)setKeyTextUnitToHeader:(id)sender; in doc");
+	NSLog(@"Caught a header menu cmd");
+	[[[[scrollView window] firstResponder] delegate] setTextUnitToHeader:self];
+	
+	
 }
 	 
 -(IBAction)nextKeyView:(id)sender

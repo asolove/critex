@@ -82,7 +82,14 @@
 -(void)setLevel:(int)l
 {
 	level = l;
-	NSLog(@"Set level to %d", l);
+	if (l > 0) {
+		NSLog(@"Adding attribute");
+		[mainText beginEditing];
+		[mainText addAttribute:NSFontAttributeName
+						 value:[NSFont fontWithName:@"Baskerville" size:20] 
+						 range:NSMakeRange(0, [mainText length])];
+		[mainText endEditing];
+	}
 }
 
 -(void)dealloc

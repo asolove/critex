@@ -32,7 +32,7 @@
 -(void)reframeTextAreasAtY:(int)y;
 -(int)bottom;
 
--(IBAction)setKeyTextUnitToHeader:(id)sender;
+-(IBAction)setTextUnitToHeader:(id)sender;
 
 -(BOOL)textView:(NSTextView *)aTextView 
 doCommandBySelector: (SEL)aSelector;

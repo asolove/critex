@@ -10,12 +10,12 @@
 
 
 @interface TextUnit : NSObject <NSCoding> {
-	NSTextStorage *mainText;
+	NSMutableAttributedString *mainText;
 	NSTextStorage *translationText;
 	NSTextStorage *footnoteText;
 	int			  level;
 }
-@property(retain) NSTextStorage *mainText;
+@property(retain) NSMutableAttributedString *mainText;
 @property(retain) NSTextStorage *translationText;
 @property(retain) NSTextStorage *footnoteText;
 @property int level;
