@@ -19,6 +19,10 @@
 	NSMutableArray *textUnits;
 	BOOL isResizing;
 	IBOutlet NSDrawer *drawer;
+	IBOutlet NSArrayController *wikiPages;
+	IBOutlet NSTextView *wikiTextView;
+	
+	IBOutlet NSTextField *wikiNameField;
 }
 @property(retain) NSMutableArray *textUnits;
 @property(retain) NSMutableArray *viewControllers;

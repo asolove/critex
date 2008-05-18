@@ -150,8 +150,6 @@
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
-
-	[self commitEditing];
 	
 	return [NSKeyedArchiver archivedDataWithRootObject: textUnits];
 	
@@ -167,6 +165,7 @@
 	
 	viewControllers = [[NSMutableArray alloc] init];
 	textUnits = [[NSMutableArray alloc] init];
+	isResizing = false;
 	
 	if (newTextUnits == nil) {
 		NSLog(@"unarchive failed");
@@ -209,7 +208,16 @@
 // Data Source for Drawer table view
 -(int)numberOfRowsInTableView:(NSTableView *)tableView
 {
-	return 3;
+	NSEnumerator *e = [viewControllers objectEnumerator];
+	TextUnitViewController *tuvc;
+	int i = 0;
+	
+	while(tuvc = [e nextObject]) {
+		if ([tuvc isHeader])
+			i++;
+	}
+	
+	return i;
 }
 -(id)tableView:(NSTableView *)tableView
 objectValueForTableColumn:(NSTableColumn *)column

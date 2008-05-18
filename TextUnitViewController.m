@@ -131,6 +131,11 @@ doCommandBySelector:(SEL)aSelector
 	[translationView setNeedsDisplay:YES];
 }
 
+-(BOOL)isHeader
+{
+	return [textUnit level] > 0;
+}
+
 -(void)handleResizeNotification:(NSNotification *)n
 {
 	if (!isResizing) {

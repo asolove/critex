@@ -10,6 +10,7 @@
 		344BFB090DDA5E6900C3A003 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB080DDA5E6900C3A003 /* FlippedView.m */; };
 		344BFB1D0DDA623500C3A003 /* TextUnitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */; };
 		344BFB720DDA6E7300C3A003 /* TextUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 344BFB710DDA6E7300C3A003 /* TextUnit.m */; };
+		34DB22DF0DE0BDD300E68B4A /* WikiPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DB22DE0DE0BDD300E68B4A /* WikiPage.m */; };
 		8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B9FDCFA73011CA2CEA /* Credits.rtf */; };
 		8D15AC2D0486D014006FF6A4 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B6FDCFA73011CA2CEA /* MainMenu.nib */; };
 		8D15AC2E0486D014006FF6A4 /* MyDocument.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2A37F4B4FDCFA73011CA2CEA /* MyDocument.nib */; };
@@ -38,6 +39,8 @@
 		344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextUnitViewController.m; sourceTree = "<group>"; };
 		344BFB700DDA6E7300C3A003 /* TextUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextUnit.h; sourceTree = "<group>"; };
 		344BFB710DDA6E7300C3A003 /* TextUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextUnit.m; sourceTree = "<group>"; };
+		34DB22DD0DE0BDD300E68B4A /* WikiPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WikiPage.h; sourceTree = "<group>"; };
+		34DB22DE0DE0BDD300E68B4A /* WikiPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WikiPage.m; sourceTree = "<group>"; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Critex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Critex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -102,6 +105,8 @@
 				344BFB1B0DDA623500C3A003 /* TextUnitViewController.m */,
 				2A37F4AEFDCFA73011CA2CEA /* MyDocument.h */,
 				2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */,
+				34DB22DD0DE0BDD300E68B4A /* WikiPage.h */,
+				34DB22DE0DE0BDD300E68B4A /* WikiPage.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -207,6 +212,7 @@
 				344BFB090DDA5E6900C3A003 /* FlippedView.m in Sources */,
 				344BFB1D0DDA623500C3A003 /* TextUnitViewController.m in Sources */,
 				344BFB720DDA6E7300C3A003 /* TextUnit.m in Sources */,
+				34DB22DF0DE0BDD300E68B4A /* WikiPage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

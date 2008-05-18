@@ -33,6 +33,7 @@
 -(int)bottom;
 
 -(IBAction)setTextUnitToHeader:(id)sender;
+-(BOOL)isHeader;
 
 -(BOOL)textView:(NSTextView *)aTextView 
 doCommandBySelector: (SEL)aSelector;
