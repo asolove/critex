@@ -34,7 +34,7 @@
 		keys = [NSArray arrayWithObject: NSFontAttributeName];
 		NSDictionary *noteAttributes = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 		
-		[self setMainText:[[NSMutableAttributedString alloc] initWithString:mainString
+		[self setMainText:[[NSTextStorage alloc] initWithString:mainString
 														  attributes:textAttributes]];
 		[self setTranslationText:[[NSMutableAttributedString alloc] initWithString:translationString
 																attributes:textAttributes]];
@@ -63,6 +63,7 @@
 	[coder encodeObject:mainText forKey:@"mainText"];
 	[coder encodeObject:translationText forKey:@"translationText"];
 	[coder encodeObject:footnoteText forKey:@"footnoteText"];
+	[coder encodeInt:level forKey:@"level"];
 }
 
 -(id)initWithCoder:(NSCoder *)coder
@@ -71,6 +72,7 @@
 	[self setMainText:[coder decodeObjectForKey:@"mainText"]];
 	[self setTranslationText:[coder decodeObjectForKey:@"translationText"]];
 	[self setFootnoteText:[coder decodeObjectForKey:@"footnoteText"]];
+	[self setLevel:[coder decodeIntForKey:@"level"]];
 	return self;
 }
 
@@ -82,14 +84,6 @@
 -(void)setLevel:(int)l
 {
 	level = l;
-	if (l > 0) {
-		NSLog(@"Adding attribute");
-		[mainText beginEditing];
-		[mainText addAttribute:NSFontAttributeName
-						 value:[NSFont fontWithName:@"Baskerville" size:20] 
-						 range:NSMakeRange(0, [mainText length])];
-		[mainText endEditing];
-	}
 }
 
 -(void)dealloc

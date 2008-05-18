@@ -18,6 +18,7 @@
 	NSMutableArray *viewControllers;
 	NSMutableArray *textUnits;
 	BOOL isResizing;
+	IBOutlet NSDrawer *drawer;
 }
 @property(retain) NSMutableArray *textUnits;
 @property(retain) NSMutableArray *viewControllers;
@@ -29,6 +30,9 @@
 // Notified of text view's frame size changing
 -(void)handleResizeNotification:(NSNotification *)n;
 
+// Commit editing on key view.
+-(BOOL)commitEditing;
+
 // Adjust tops of all views
 -(IBAction)reframeAllTextAreasAction:(id)sender;
 -(void)reframeAllTextAreas;
@@ -37,6 +41,16 @@
 -(void)setContentViewHeightTo:(int)height;
 -(void)setContentViewHeightToFit;
 -(int)bottom;
+
+// Drawer methods
+-(IBAction)toggleDrawer:(id)sender;
+-(NSString *)fontForDrawer;
+
+// Data Source for Drawer table view
+-(int)numberOfRowsInTableView:(NSTableView *)tableView;
+-(id)tableView:(NSTableView *)tableView
+objectValueForTableColumn:(NSTableColumn *)column
+		   row:(int)rowIndex;
 
 // Menu items for formatting tuvc's
 -(IBAction)setKeyTextUnitToHeader:(id)sender;

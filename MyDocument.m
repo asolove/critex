@@ -34,6 +34,12 @@
     return self;
 }
 
+-(void)dealloc 
+{
+	NSLog(@"Dealloc called");
+	[super dealloc];
+}
+
 - (NSString *)windowNibName
 {
     // Override returning the nib file name of the document
@@ -145,6 +151,8 @@
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
 
+	[self commitEditing];
+	
 	return [NSKeyedArchiver archivedDataWithRootObject: textUnits];
 	
     if ( outError != NULL ) {
@@ -172,7 +180,12 @@
     return YES;
 }
 
-// Menu items
+// Commit editing on key view
+
+-(BOOL)commitEditing
+{
+	return [[[scrollView window] firstResponder] commitEditing];
+}
 
 // exploratory
 -(IBAction)setKeyTextUnitToHeader:(id)sender
@@ -180,8 +193,29 @@
 	// how do we get to the controller when we only have the text view?
 	NSLog(@"Caught a header menu cmd");
 	[[[[scrollView window] firstResponder] delegate] setTextUnitToHeader:self];
-	
-	
+}
+
+// Drawer methods
+-(IBAction)toggleDrawer:(id)sender
+{
+	[drawer toggle:self];
+}
+
+-(NSString *)fontForDrawer
+{
+	return @"Baskerville";
+}
+
+// Data Source for Drawer table view
+-(int)numberOfRowsInTableView:(NSTableView *)tableView
+{
+	return 3;
+}
+-(id)tableView:(NSTableView *)tableView
+objectValueForTableColumn:(NSTableColumn *)column
+		   row:(int)rowIndex
+{
+	return [[[[viewControllers objectAtIndex:0] valueForKey:@"mainTextView"] textStorage] string]; 
 }
 	 
 -(IBAction)nextKeyView:(id)sender

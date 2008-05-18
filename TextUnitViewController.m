@@ -54,7 +54,6 @@
 	[translationView setNextKeyView:footnoteTextView];
 	[footnoteTextView setNextKeyView:mainTextView];
 	
-	
 	// As delegate: intercept tabs adn other special chars we want to handle.
 	[mainTextView setDelegate:self];
 	[translationView setDelegate:self];
@@ -110,6 +109,26 @@ doCommandBySelector:(SEL)aSelector
 -(IBAction)setTextUnitToHeader:(id)sender
 {
 	[textUnit setLevel:4];
+	
+	NSTextStorage *mainText = [mainTextView textStorage];
+	NSTextStorage *translationText = [translationView textStorage];
+	
+	NSFont *font = [NSFont fontWithName:@"Baskerville" size:20];
+	
+	
+	[mainText beginEditing];
+	[mainText addAttribute:NSFontAttributeName
+					 value:font
+					 range:NSMakeRange(0, [mainText length])];
+	[mainText endEditing];
+	
+	[translationText beginEditing];
+	[translationText addAttribute:NSFontAttributeName
+					 value:font
+					 range:NSMakeRange(0, [translationText length])];
+	[translationText endEditing];
+	
+	[translationView setNeedsDisplay:YES];
 }
 
 -(void)handleResizeNotification:(NSNotification *)n
@@ -119,6 +138,10 @@ doCommandBySelector:(SEL)aSelector
 	}
 }
 
+-(BOOL)commitEditing
+{
+	return [mainTextView commitEditing] &&	[translationView commitEditing] && [footnoteTextView commitEditing];
+}
 -(void)reframeTextAreasAtY:(int)y
 {
 	y = y + 25; // top margin

@@ -39,4 +39,5 @@ doCommandBySelector: (SEL)aSelector;
 
 -(void)encodeWithCoder:(NSCoder *)coder;
 -(id)initWithCoder:(NSCoder *)coder;
+-(BOOL)commitEditing;
 @end
