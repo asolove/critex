@@ -9,12 +9,12 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface WikiPage : NSObject {
+@interface WikiPage : NSObject <NSCoding> {
 	NSString *title;
-	NSString *tags;
+	NSArray *tags;
 	NSAttributedString *text;
 }
 @property(retain) NSString *title;
-@property(retain) NSString *tags;
+@property(retain) NSArray *tags;
 @property(retain) NSAttributedString *text;
 @end

@@ -38,15 +38,15 @@
 	bottom = x + 35;
 	
 	[mainTextView bind:@"attributedString"
-			  toObject:tu 
+			  toObject:textUnit 
 		   withKeyPath:@"mainText"
 			   options:nil];
 	[translationView bind:@"attributedString"
-			  toObject:tu 
+			  toObject:textUnit 
 		   withKeyPath:@"translationText"
 			   options:nil];
 	[footnoteTextView bind:@"attributedString"
-			  toObject:tu 
+			  toObject:textUnit 
 		   withKeyPath:@"footnoteText"
 			   options:nil];
 	
@@ -92,6 +92,31 @@
 	
 	
 	return self;
+}
+
+-(void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSViewFrameDidChangeNotification
+												  object:mainTextView];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSViewFrameDidChangeNotification
+												  object:translationView];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+													name:NSViewFrameDidChangeNotification
+												  object:footnoteTextView];
+	
+	[mainTextView release];
+	[translationView release];
+	[footnoteTextView release];
+	
+	
+	[textUnit release];
+	[view release];
+	[separator release];
+	[super dealloc];
 }
 
 // Delegate method for handling special chars in text views

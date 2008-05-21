@@ -19,9 +19,9 @@
 	NSMutableArray *textUnits;
 	BOOL isResizing;
 	IBOutlet NSDrawer *drawer;
-	IBOutlet NSArrayController *wikiPages;
+	IBOutlet NSArrayController *wikiPagesController;
+	NSMutableArray *wikiPages;
 	IBOutlet NSTextView *wikiTextView;
-	
 	IBOutlet NSTextField *wikiNameField;
 }
 @property(retain) NSMutableArray *textUnits;
@@ -59,4 +59,10 @@ objectValueForTableColumn:(NSTableColumn *)column
 // Menu items for formatting tuvc's
 -(IBAction)setKeyTextUnitToHeader:(id)sender;
 -(IBAction)nextKeyView:(id)sender;
+
+//Printing
+-(void)printShowingPrintPanel:(BOOL)flag;
+-(void)documentDidRunModalPrintOperation:(NSDocument *)document
+								 success:(BOOL)success
+							 contextInfo:(NSNumber *)width;
 @end

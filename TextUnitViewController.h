@@ -25,6 +25,7 @@
 -(id)initWithTextUnit:(TextUnit *)tu
 				 view:(NSView *)view
 			  originX:(int)x;
+-(void)dealloc;
 -(NSTextView *)createTextViewWithFrame:(NSRect)frame;
 
 -(void)handleResizeNotification:(NSNotification *)n;

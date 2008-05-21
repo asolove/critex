@@ -30,7 +30,7 @@
 											 size:12]
 					  forKey:NSFontFamilyAttribute];
 						
-	[self setText:[[NSAttributedString alloc] initWithString:@"This should be white"
+	[self setText:[[NSAttributedString alloc] initWithString:@" "
 												  attributes:textAttributes]];
 	
 	
@@ -38,10 +38,28 @@
 	return self;
 }
 
+
+-(void)encodeWithCoder:(NSCoder *)coder
+{
+	[coder encodeObject:text forKey:@"text"];
+	[coder encodeObject:title forKey:@"title"];
+	[coder encodeObject:tags forKey:@"tags"];
+}
+
+-(id)initWithCoder:(NSCoder *)coder
+{
+	[super init];
+	[self setTitle:[coder decodeObjectForKey:@"title"]];
+	[self setText:[coder decodeObjectForKey:@"text"]];
+	[self setTags:[coder decodeObjectForKey:@"tags"]];
+	return self;
+}
+
 -(void)dealloc
 {
 	[title release];
 	[text release];
+	[tags release];
 	[super dealloc];
 }
 

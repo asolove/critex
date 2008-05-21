@@ -29,6 +29,7 @@
     if (self) {
 		viewControllers = [[NSMutableArray alloc] init];
 		textUnits = [[NSMutableArray alloc] init];
+		wikiPages = [[NSMutableArray alloc] init];
 		isResizing = false;
     }
     return self;
@@ -36,7 +37,17 @@
 
 -(void)dealloc 
 {
-	NSLog(@"Dealloc called");
+	[viewControllers release];
+	[textUnits release];
+	[wikiPages release];
+	
+	[contentView release];
+	[scrollView release];
+	[drawer release];
+	[wikiPagesController release];
+	[wikiTextView release];
+	[wikiNameField release];
+	
 	[super dealloc];
 }
 
@@ -44,14 +55,12 @@
 {
     // Override returning the nib file name of the document
     // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
-    return @"MyDocument";
+	return @"MyDocument";
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
 {
     [super windowControllerDidLoadNib:aController];
-	
-	[scrollView setDocumentView:contentView];
 	
 	if ([textUnits count] > 0) {
 		NSLog(@"Opening a saved document");
@@ -229,5 +238,37 @@ objectValueForTableColumn:(NSTableColumn *)column
 -(IBAction)nextKeyView:(id)sender
 {
 	[[scrollView window] selectNextKeyView:self];
+}
+
+// Printing
+-(void)printShowingPrintPanel:(BOOL)flag
+{
+	NSPrintInfo *printInfo = [self printInfo];
+	float width = [printInfo paperSize].width - 2 * [printInfo leftMargin];
+	NSRect beforeFrame = [contentView frame];
+	NSNumber *oldWidth = [[NSNumber alloc] initWithInt:beforeFrame.size.width];
+	NSRect tmpFrame = beforeFrame;
+	tmpFrame.size.width = width;
+	[contentView setFrame:tmpFrame];
+	[self reframeAllTextAreas];
+	
+	NSPrintOperation *printOp = [NSPrintOperation printOperationWithView:contentView
+															   printInfo:printInfo];
+	
+	[printOp setShowPanels:flag];
+	[self runModalPrintOperation:printOp
+						delegate:self
+				  didRunSelector:@selector(documentDidRunModalPrintOperation:success:contextInfo:)
+					 contextInfo:oldWidth];
+	
+}
+- (void)documentDidRunModalPrintOperation:(NSDocument *)document  
+								  success:(BOOL)success  
+							  contextInfo:(NSNumber *)width
+{
+	NSRect frame = [contentView frame];
+	frame.size.width = [width intValue]; 
+	[contentView setFrame:frame];
+	[self reframeAllTextAreas];
 }
 @end
