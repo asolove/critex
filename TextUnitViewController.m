@@ -237,5 +237,11 @@ doCommandBySelector:(SEL)aSelector
 	textUnit = [coder decodeObjectForKey:@"textUnit"];
 	return self;
 }
+//TODO: remove test
 
+-(IBAction)appendTextUnitViewController:(id)sender
+{
+	
+	NSLog(@"TUVC caugh menu item call");
+}
 @end

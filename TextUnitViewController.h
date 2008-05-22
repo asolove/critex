@@ -42,4 +42,8 @@ doCommandBySelector: (SEL)aSelector;
 -(void)encodeWithCoder:(NSCoder *)coder;
 -(id)initWithCoder:(NSCoder *)coder;
 -(BOOL)commitEditing;
+
+//TODO: Remove this test
+
+-(IBAction)appendTextUnitViewController:(id)sender;
 @end

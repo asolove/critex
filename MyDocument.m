@@ -232,7 +232,18 @@
 objectValueForTableColumn:(NSTableColumn *)column
 		   row:(int)rowIndex
 {
-	return [[[[viewControllers objectAtIndex:0] valueForKey:@"mainTextView"] textStorage] string]; 
+	// return [[[[viewControllers objectAtIndex:0] valueForKey:@"mainTextView"] textStorage] string]; 
+	switch (rowIndex) {
+		case 0: 
+			return @"Imitating the Crown Prince of Wei's";
+		case 1:
+			return @" Zhi, Marquis of Pingyuan";
+			break;
+		case 2:
+			return @" Pi, The Crown Prince";
+			break;
+			
+	}
 }
 	 
 -(IBAction)nextKeyView:(id)sender
