@@ -1,17 +1,19 @@
-;; Nukefile for Nu demo application
+;; Nukefile
 
-;; source files
-(set @nu_files 	  (filelist "^nu/.*nu$"))
-(set @resources   (filelist "^resources/English\.lproj/[^/]*$"))
+;; Set resource paths:
+(set @nu_files (filelist "^nu/.*\.nu$")) 	;; don't forget that filelist expects regular expressions.
+(set @icon_files (filelist "^resources/.*icns$"))
+(set @nib_files (filelist "^resources/English\.lproj/.*\.nib$"))
 
-;; application description
-(set @application 	       	   "Critex")
-(set @application_identifier   "ds.text.Critex")
+;; Unclear if I have to set these even with info.plist below
+(set @application "Critex")
+(set @application_identifier "ds.text.Critex")
+
 
 ;; specify the entire Info.plist here:
 (set @info
      (dict "CFBundleDevelopmentRegion" "English"
-           "CFBundleDocumentTypes"  
+           "CFBundleDocumentTypes"
            (array (dict "CFBundleTypeExtensions" (array "crtx")
                         "CFBundleTypeName" "DocumentType"
                         "CFBundleTypeRole" "Editor"
@@ -23,11 +25,10 @@
            "CFBundlePackageType" "APPL"
            "CFBundleSignature" "????"
            "CFBundleVersion" "1.2"
+           "NSAppleScriptEnabled" "YES"
            "NSMainNibFile" "MainMenu"
            "NSPrincipalClass" "NSApplication"))
 
-
-;; tasks
-(compilation-tasks)
 (application-tasks)
+
 (task "default" => "application")
