@@ -1,4 +1,4 @@
-.*\.app
+Critex.app/*
 build/*
 .DS_Store
 */.DS_Store

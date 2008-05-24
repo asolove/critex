@@ -1,8 +1,7 @@
 ;; Nukefile
 
 ;; Set resource paths:
-(set @nu_files (filelist "^nu/.*\.nu$")) 	;; don't forget that filelist expects regular expressions.
-(set @icon_files (filelist "^resources/.*icns$"))
+(set @nu_files  (filelist "^nu/.*\.nu$"))
 (set @nib_files (filelist "^resources/English\.lproj/.*\.nib$"))
 
 ;; Unclear if I have to set these even with info.plist below
