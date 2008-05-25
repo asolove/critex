@@ -6,22 +6,15 @@
 ;; @class MyDocument
 ;; @discussion Each Critex document has textUnits and wikiPages
 (class MyDocument is NSDocument
-     (ivar (id) contentView)
-     
-     (- appendTextUnit:(id)sender is
-        (NSLog "caught append"))
      
      (- (id)init is
         (super init)
         self)
      
-     (- (id)windowNibName is "MyDocument")
-     
-     (- (void)windowControllerDidLoadNib:(id) aController is
-        (super windowControllerDidLoadNib:aController)
-        (@contentView addSubview:((TextUnitView alloc)
-                                  initWithFrame:(list PADDING PADDING 500 200)
-                                  TextUnit: ((SimpleTextUnit alloc) init))))
+     ; (- (id)windowNibName is "MyDocument")
+     (- makeWindowControllers is
+        (set documentController ((DocumentController alloc) initWithWindowNibName:"Document"))
+        (self addWindowController:documentController))
      
      (- (id)dataRepresentationOfType:(id)aType is)
      
@@ -31,6 +24,35 @@
      (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is
         (NSPrintOperation printOperationWithView:@packerView printInfo:(self printInfo))))
 
+;; @class DocumentController
+;; @description Controls the main document view and its contained textUnits
+(class DocumentController is NSWindowController
+     (ivar (id) contentView
+           (id) textUnits
+           (int) bottom)
+     
+     (- windowDidLoad is
+        (set @bottom 0)
+        (set @textUnits ((NSMutableArray alloc) init))
+        (self addNewTextUnitToEnd))
+     
+     
+     (- addNewTextUnitToEnd is
+        (NSLog "adding new text unit")
+        (set textUnit ((SimpleTextUnit alloc) init))
+        (@textUnits << textUnit)
+        (@contentView addSubview:((TextUnitView alloc)
+                                  initWithFrame:(list
+                                                     PADDING
+                                                     (+ PADDING @bottom)
+                                                     500
+                                                     200)
+                                  TextUnit: textUnit))
+        (set @bottom (+ @bottom 100)))
+     
+     (- dealloc is
+        (@textUnits release)))
+
 ;; @macro textview
 ;; @description create an appropriately sized and bound TextUnit and add
 ;; to the calling environments subviews.
@@ -39,7 +61,7 @@
      (set __view ((NSTextView alloc) initWithFrame:(eval (car (cdr margs)))))
      (__view bind:"attributedString" toObject:__text withKeyPath:"string" options:nil)
      (self addSubview:__view)
-     ((@textViews last) setNextKeyView:__view)
+     ; ((@textViews last) setNextKeyView:__view)
      (__view setNextKeyView: (@textViews 0))
      (__view setDelegate:self)
      (@textViews << __view))
@@ -53,14 +75,14 @@
            (id) noteViews)
      
      (- appendTextUnit:(id)sender is
-        ())
+        (set controller ((self window) windowController))
+        (NSLog "caught append, sending to: #{controller}")
+        (controller addNewTextUnitToEnd))
      
      (- (BOOL)textView:(id)aTextView doCommandBySelector:(SEL)aSelector is
-        (NSLog "called do commandSelector for #{aSelector}")
         (if (eq aSelector "insertTab:")
             (then
                  ((aTextView window) selectNextKeyView:self)
-                 (NSLog "#{(aTextView window)}")
                  t)
             (else nil)))
      
