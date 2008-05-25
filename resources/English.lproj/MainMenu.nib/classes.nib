@@ -9,8 +9,6 @@
 			<dict>
 				<key>appendTextUnit</key>
 				<string>id</string>
-				<key>tabToNextText</key>
-				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>FirstResponder</string>

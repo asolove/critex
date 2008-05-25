@@ -2,6 +2,8 @@
 ;; @discussion Main Critex classes
 
 (global PADDING 10) ;; Space between each textView
+(global X_MARGIN 20)
+(global Y_MARGIN 30)
 
 ;; @class MyDocument
 ;; @discussion Each Critex document has textUnits and wikiPages
@@ -40,6 +42,25 @@
         (@textUnitViews each: (do (textUnitView)
                                   (textUnitView reframeTextAreas))))
      
+     ;; Set the frames of all textUnitViews to appropriate tops and heights
+     ;; vertical sizes
+     (- reframeAllTextUnitViews is
+        (NSLog "reframing all tuv's")
+        (set top Y_MARGIN)
+        (@textUnitViews each:
+             (do (tuv)
+                 (set frame (tuv frame))
+                 (tuv setFrame:(list X_MARGIN
+                                     (+ top PADDING)
+                                     (frame-width frame)
+                                     (frame-height frame)))
+                 (set top (+ top PADDING (frame-height frame)))))
+        (set frame (@contentView frame))
+        (@contentView setFrame:(list (frame-x frame) (frame-y frame) (frame-width frame) top)))
+     
+     (- textUnitViewFrameDidChange is
+        (self reframeAllTextUnitViews))
+     
      (- windowDidLoad is
         (set @bottom 0)
         (set @textUnitViews ((NSMutableArray alloc) init))
@@ -58,15 +79,20 @@
         (@textUnits << textUnit)
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
-                                              20
-                                              (+ 30 @bottom)
-                                              (- (frame-width (@contentView frame)) (* 2 20))
+                                              X_MARGIN
+                                              (+ Y_MARGIN @bottom)
+                                              (- (frame-width (@contentView frame)) (* 2 X_MARGIN))
                                               20)
                            TextUnit: textUnit))
         (textUnitView setAutoresizingMask:2)
         (@textUnitViews << textUnitView)
         (@contentView addSubview:textUnitView)
-        (set @bottom (+ @bottom 20 (frame-height (textUnitView frame)))))
+        ((NSNotificationCenter defaultCenter)
+         addObserver:self
+         selector:"textUnitViewFrameDidChange"
+         name:"NSViewFrameDidChangeNotification"
+         object:textUnitView)
+        (set @bottom (+ @bottom PADDING (frame-height (textUnitView frame)))))
      
      (- dealloc is
         ((NSNotificationCenter defaultCenter)
@@ -88,7 +114,9 @@
            (id) noteViews)
      
      (- appendTextUnit:(id)sender is
-        (set controller ((self window) windowController))
+        (set window (self window))
+        (set controller (window windowController))
+        (NSLog "sending to #{controller}")
         (controller addNewTextUnitToEnd))
      
      (- reframeTextAreas is
