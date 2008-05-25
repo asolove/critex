@@ -40,14 +40,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>31</integer>
+				<integer>86</integer>
 				<key>line</key>
-				<integer>57</integer>
+				<integer>206</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>52</integer>
+			<integer>185</integer>
 		</dict>
 		<key>nu/main.nu</key>
 		<dict>
@@ -63,12 +63,27 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>nu/utility.nu</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>13</integer>
+				<key>line</key>
+				<integer>30</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>Nukefile</string>
 		<string>nu/main.nu</string>
 		<string>nu/critex.nu</string>
+		<string>nu/utility.nu</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
