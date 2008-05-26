@@ -9,6 +9,14 @@
 			<dict>
 				<key>appendTextUnit</key>
 				<string>id</string>
+				<key>setHeaderLevel0</key>
+				<string>id</string>
+				<key>setHeaderLevel1</key>
+				<string>id</string>
+				<key>setHeaderLevel2</key>
+				<string>id</string>
+				<key>setHeaderLevel3</key>
+				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>FirstResponder</string>

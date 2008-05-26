@@ -113,6 +113,28 @@
            (id) separator
            (id) noteViews)
      
+     (- setLevel:(int)level is
+        (set attributes (@textUnit setLevelAndReturnAttributes:level))
+        (@textViews each:(do (view)
+                             (set text (view textStorage))
+                             (text beginEditing)
+                             (text addAttributes:attributes
+                                   range:(list 0 (text length)))
+                             (text endEditing)
+                             (view setTypingAttributes:attributes)))
+        (self setNeedsDisplay:t))
+     
+     
+     
+     (- setHeaderLevel1:(id)sender is
+        (self setLevel:1))
+     (- setHeaderLevel2:(id)sender is
+        (self setLevel:2))
+     (- setHeaderLevel3:(id)sender is
+        (self setLevel:3))
+     (- setHeaderLevel0:(id)sender is
+        (self setLevel:0))
+     
      (- appendTextUnit:(id)sender is
         (set window (self window))
         (set controller (window windowController))
@@ -241,19 +263,30 @@
 ;; @class SimpleTextUnit
 ;; @description A text unit with text, translation, glosses and notes
 (class SimpleTextUnit is TextUnit
+     ;; TODO: make these class attributes of TextUnit (why doesn't that work?)
      (set textAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:16)
+                       forKey:"NSFont"))
+     (set headerAttributes
+          (NSDictionary
+                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:20)
                        forKey:"NSFont"))
      (set noteAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:13)
                        forKey:"NSFont"))
      
+     ;; TODO: should be setLevel:(int)level andGetAttributes:(**)attributes
+     ;; but I don't know how to do that in Nu
+     (- setLevelAndReturnAttributes:(int)level is
+        (set @level level)
+        (if (> level 0)
+            (then headerAttributes)
+            (else textAttributes)))
      
      (- (id) init is
         (super init)
-        
         
         (@texts addObject:((NSMutableAttributedString alloc)
                            initWithString:" "
