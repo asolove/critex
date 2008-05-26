@@ -8,6 +8,8 @@
 ;; @class MyDocument
 ;; @discussion Each Critex document has textUnits and wikiPages
 (class MyDocument is NSDocument
+     (ivar (id) documentController
+           (id) wikiController)
      
      (- (id)init is
         (super init)
@@ -16,12 +18,13 @@
      (- (void)dealloc is
         ((self windowControllers) release))
      
-     ; (- (id)windowNibName is "MyDocument")
      (- makeWindowControllers is
-        (set documentController ((DocumentController alloc) initWithWindowNibName:"Document"))
-        (self addWindowController:documentController))
+        (set @documentController ((DocumentController alloc)
+                                  initWithWindowNibName:"Document"))
+        (self addWindowController:@documentController))
      
-     (- (id)dataRepresentationOfType:(id)aType is)
+     (- (id)dataOfType:(id)aType error:(id)outError is
+        (NSKeyedArchiver archivedDataWithRootObject:documentController))
      
      (- (BOOL)loadDataRepresentation:(id)data ofType:(id)aType is
         YES)
@@ -32,10 +35,18 @@
 ;; @class DocumentController
 ;; @description Controls the main document view and its contained textUnits
 (class DocumentController is NSWindowController
-     (ivar (id) contentView
-           (id) textUnits
-           (id) textUnitViews
-           (int) bottom)
+     (ivar (id) contentView         ;; document view inside right-side scrollView
+           (id) textUnits           ;; array of TextUnit items
+           (id) headerTableView     ;; TableView listing header TextUnits
+           (id) textUnitViews       ;; array of TextUnitViews
+           (int) bottom)            ;; current bottom y in the view (this should be factored out)
+     
+     (- (id)headerTextUnits is
+        (set headers ((NSArray alloc) init))
+        (@textUnits each: (do (textUnit)
+                              (if (> (textUnit level) 0)
+                                  (headers << textUnit))))
+        headers)
      
      (- (void)contentViewDidResize is
         ;; might consider limiting this to only after mouseup
@@ -61,8 +72,21 @@
      (- textUnitViewFrameDidChange is
         (self reframeAllTextUnitViews))
      
+     ;; Data source methods for headerTableView
+     ;; TODO : implement for @textUnits
+     (- (int)numberOfRowsInTableView:(id)tableView is
+        (@textUnits count))
+     
+     (- (id)tableView:(id)tableView objectValueForTableColumn:(id)column row:(int) row is
+        (NSLog "value")
+        (((@textUnits row) texts) 0))
+     
+     (- headerTableFont is
+        (NSFont menuBarFontOfSize:12))
+     
      (- windowDidLoad is
         (set @bottom 0)
+        (@headerTableView setDataSource:self)
         (set @textUnitViews ((NSMutableArray alloc) init))
         (set @textUnits ((NSMutableArray alloc) init))
         ((NSNotificationCenter defaultCenter)
@@ -277,8 +301,6 @@
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:13)
                        forKey:"NSFont"))
      
-     ;; TODO: should be setLevel:(int)level andGetAttributes:(**)attributes
-     ;; but I don't know how to do that in Nu
      (- setLevelAndReturnAttributes:(int)level is
         (set @level level)
         (if (> level 0)
