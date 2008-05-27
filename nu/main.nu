@@ -7,5 +7,7 @@
 (load "utility")
 (load "critex")
 
+(global DEBUG t)    ;; turn off to remove log messages
+
 ;; run the main Cocoa event loop
 (NSApplicationMain 0 nil)

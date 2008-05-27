@@ -1,5 +1,6 @@
 ;; utility.nu
-;; Utility classes
+;; Utility classes, functions, macros
+
 
 ;; @class View
 ;; @description View that calculates positions from upper left
@@ -7,7 +8,17 @@
      (- (BOOL) isFlipped is
         t))
 
-;; Methods for dealing with frames
+;; @macro +=
+;; sets the first argument to the sum of all arguments and returns
+(macro +=
+     (set (unquote (car margs))
+          (eval (append (list +) margs))))
+
+(macro debug
+     (if (DEBUG)
+         (NSLog (eval (car margs)))))
+
+;; Functions for dealing with frames
 (function frame-x (frame)
      (car frame))
 
@@ -31,6 +42,20 @@
      (- (void)setIdentity:(id)new is
         (set self new)))
 
+;; @class NSArray
+;; add a method for getting to the last object in an array
 (class NSArray
      (- last is
         (self (- (self count) 1))))
+
+;; @class NSString
+;; add a method for repeating a string multiple times
+(class NSString
+     (- times:(int)n is
+        (set string (self copy))
+        (set result (self copy))
+        (n times:(do (i)
+                     (+= result string)))
+        result))
+
+

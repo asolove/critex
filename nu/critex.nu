@@ -1,9 +1,9 @@
 ;; @file critex.nu
 ;; @discussion Main Critex classes
 
-(global PADDING 10) ;; Space between each textView
-(global X_MARGIN 20)
-(global Y_MARGIN 30)
+(global PADDING 10)     ;; Space between each textView
+(global X_MARGIN 20)    ;;
+(global Y_MARGIN 30)    ;;
 
 ;; @class MyDocument
 ;; @discussion Each Critex document has textUnits and wikiPages
@@ -41,6 +41,14 @@
            (id) textUnitViews       ;; array of TextUnitViews
            (int) bottom)            ;; current bottom y in the view (this should be factored out)
      
+     (- initWithWindowNibName:(id)name is
+        (super initWithWindowNibName:name)
+        (set @bottom 0)
+        
+        (set @textUnitViews ((NSMutableArray alloc) init))
+        (set @textUnits ((NSMutableArray alloc) init))
+        self)
+     
      (- (id)headerTextUnits is
         (set headers ((NSArray alloc) init))
         (@textUnits each: (do (textUnit)
@@ -56,7 +64,7 @@
      ;; Set the frames of all textUnitViews to appropriate tops and heights
      ;; vertical sizes
      (- reframeAllTextUnitViews is
-        (NSLog "reframing all tuv's")
+        (debug "reframing all tuv's")
         (set top Y_MARGIN)
         (@textUnitViews each:
              (do (tuv)
@@ -65,7 +73,7 @@
                                      (+ top PADDING)
                                      (frame-width frame)
                                      (frame-height frame)))
-                 (set top (+ top PADDING (frame-height frame)))))
+                 (+= top PADDING (frame-height frame))))
         (set frame (@contentView frame))
         (@contentView setFrame:(list (frame-x frame) (frame-y frame) (frame-width frame) top)))
      
@@ -73,32 +81,39 @@
         (self reframeAllTextUnitViews))
      
      ;; Data source methods for headerTableView
-     ;; TODO : implement for @textUnits
+     ;; TODO: This should be an outlineView, but I'm afraid of NSTreeController
      (- (int)numberOfRowsInTableView:(id)tableView is
         (@textUnits count))
      
+     ;; TODO: unless we switch to an outline view, should return strings with
+     ;; variable formatting to display relative header levels
      (- (id)tableView:(id)tableView objectValueForTableColumn:(id)column row:(int) row is
-        (NSLog "value")
-        (((@textUnits row) texts) 0))
+        (set level ((@textUnits row) level))
+        (+ (if (> level 0)
+               (then (" " times:((@textUnits row) level)))
+               (else (" " times:6)))
+           (((((@textUnitViews row) textViews) 0) textStorage) string)))
      
      (- headerTableFont is
-        (NSFont menuBarFontOfSize:12))
+        (NSFont menuFontOfSize:0))
      
+     ;; FIXME: this isn't getting called from the TextUnitView. Why?
+     (- reloadHeaderTableData is
+        (debug "Reload data call")
+        (@headerTableView reloadData))
+     
+     ;; Setup views once the window is loaded
      (- windowDidLoad is
-        (set @bottom 0)
-        (@headerTableView setDataSource:self)
-        (set @textUnitViews ((NSMutableArray alloc) init))
-        (set @textUnits ((NSMutableArray alloc) init))
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"contentViewDidResize"
          name:"NSViewFrameDidChangeNotification"
          object:@contentView)
-        (self addNewTextUnitToEnd)
-        (self addNewTextUnitToEnd))
+        (self addNewTextUnitToEnd:self)
+        (self addNewTextUnitToEnd:self)
+        (@headerTableView setDataSource:self))
      
-     (- addNewTextUnitToEnd is
-        (NSLog "adding new text unit")
+     (- addNewTextUnitToEnd:(id)sender is
         (set textUnit ((SimpleTextUnit alloc) init))
         (@textUnits << textUnit)
         (set textUnitView ((TextUnitView alloc)
@@ -116,6 +131,7 @@
          selector:"textUnitViewFrameDidChange"
          name:"NSViewFrameDidChangeNotification"
          object:textUnitView)
+        (@headerTableView reloadData)
         (set @bottom (+ @bottom PADDING (frame-height (textUnitView frame)))))
      
      (- dealloc is
@@ -137,19 +153,10 @@
            (id) separator
            (id) noteViews)
      
-     (- setLevel:(int)level is
-        (set attributes (@textUnit setLevelAndReturnAttributes:level))
-        (@textViews each:(do (view)
-                             (set text (view textStorage))
-                             (text beginEditing)
-                             (text addAttributes:attributes
-                                   range:(list 0 (text length)))
-                             (text endEditing)
-                             (view setTypingAttributes:attributes)))
-        (self setNeedsDisplay:t))
+     (ivar-accessors)
      
-     
-     
+     ;; Menu commands to intercept
+     ;; setLevel command to set the relative header level of text.
      (- setHeaderLevel1:(id)sender is
         (self setLevel:1))
      (- setHeaderLevel2:(id)sender is
@@ -159,12 +166,28 @@
      (- setHeaderLevel0:(id)sender is
         (self setLevel:0))
      
+     (- setLevel:(int)level is
+        (set attributes (@textUnit setLevelAndReturnAttributes:level))
+        (@textViews each:(do (view)
+                             (set text (view textStorage))
+                             (text beginEditing)
+                             (text addAttributes:attributes
+                                   range:(list 0 (text length)))
+                             (text endEditing)
+                             (view setTypingAttributes:attributes)))
+        (self setNeedsDisplay:t)
+        (((self window) windowController) reloadHeaderTableData))
+     
+     ;; appendTextUnit to add another paragraph on to the end
+     ;; TODO: add  addTextUnitAtRow:(int)row
      (- appendTextUnit:(id)sender is
         (set window (self window))
         (set controller (window windowController))
-        (NSLog "sending to #{controller}")
+        (debug "sending to #{controller}")
         (controller addNewTextUnitToEnd))
      
+     ;; reframeTextAreas: called whenever the height of one changes
+     ;; TODO: consider faster ways of doing this. Maybe in C instead of NSNumbers.
      (- reframeTextAreas is
         (set frame (self frame))
         (set width (frame-width frame))
@@ -175,17 +198,17 @@
         (@textViews each: (do (textView)
                               (set height (frame-height (textView frame)))
                               (textView setFrame:(list left 0 each-width height))
-                              (set left (+ left each-width PADDING))
+                              (+= left each-width PADDING)
                               (if (> height top) (set top height))))
         
-        (set top (+ top PADDING))
+        (+= top PADDING)
         (@separator setFrame:(list 0 top width 2))
-        (set top (+ top PADDING))
+        (+= top PADDING)
         
         (@noteViews each: (do (noteView)
                               (set height (frame-height (noteView frame)))
                               (noteView setFrame:(list 0 top width height))
-                              (set top (+ top PADDING height))))
+                              (+= top PADDING height)))
         (set frame (self frame))
         (self setFrame:(list (frame-x frame) (frame-y frame) (frame-width frame)
                              top))
@@ -193,6 +216,11 @@
         (self setNeedsDisplay:t))
      
      ;; delegate methods for textViews:
+     
+     ;; FIXME: This gets called but doesn't call DocumentController's reloadHeaderTableData
+     (- textDidEndEditing:(id)n is
+        (debug "done edititng")
+        (((self window) windowController) reloadHeaderTableData))
      
      ;; Intercept command key strokes
      (- (BOOL)textView:(id)aTextView doCommandBySelector:(SEL)aSelector is
@@ -287,7 +315,8 @@
 ;; @class SimpleTextUnit
 ;; @description A text unit with text, translation, glosses and notes
 (class SimpleTextUnit is TextUnit
-     ;; TODO: make these class attributes of TextUnit (why doesn't that work?)
+     ;; FIXME: move attributes to the view and use setTypingAttributes to set
+     ;; the default values for each view.
      (set textAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:16)
@@ -311,7 +340,7 @@
         (super init)
         
         (@texts addObject:((NSMutableAttributedString alloc)
-                           initWithString:" "
+                           initWithString:"Hello"
                            attributes:textAttributes))
         (@texts addObject:((NSMutableAttributedString alloc)
                            initWithString:" "
