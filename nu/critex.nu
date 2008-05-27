@@ -38,23 +38,14 @@
      (ivar (id) contentView         ;; document view inside right-side scrollView
            (id) textUnits           ;; array of TextUnit items
            (id) headerTableView     ;; TableView listing header TextUnits
-           (id) textUnitViews       ;; array of TextUnitViews
-           (int) bottom)            ;; current bottom y in the view (this should be factored out)
+           (id) textUnitViews)       ;; array of TextUnitViews
      
      (- initWithWindowNibName:(id)name is
         (super initWithWindowNibName:name)
-        (set @bottom 0)
         
         (set @textUnitViews ((NSMutableArray alloc) init))
         (set @textUnits ((NSMutableArray alloc) init))
         self)
-     
-     (- (id)headerTextUnits is
-        (set headers ((NSArray alloc) init))
-        (@textUnits each: (do (textUnit)
-                              (if (> (textUnit level) 0)
-                                  (headers << textUnit))))
-        headers)
      
      (- (void)contentViewDidResize is
         ;; might consider limiting this to only after mouseup
@@ -113,26 +104,38 @@
         (self addNewTextUnitToEnd:self)
         (@headerTableView setDataSource:self))
      
+     ;; Add Text Unit commands:
+     (- addTextUnitAfter:(id)previous is
+        (debug "adding after #{previous}"))
+     
      (- addNewTextUnitToEnd:(id)sender is
+        (self insertTextUnitAtIndex:(@textUnits count)))
+     
+     ;; TODO: Use document settings to choose TextUnit subclass
+     (- insertTextUnitAtIndex:(int)i is
         (set textUnit ((SimpleTextUnit alloc) init))
-        (@textUnits << textUnit)
+        (@textUnits insertObject:textUnit atIndex:i)
+        (set top (if (> i 0)
+                     (then
+                          (set frame ((@textUnitViews (- i 1)) frame))
+                          (+ (frame-height frame) (frame-y frame)))
+                     (else 0)))
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
                                               X_MARGIN
-                                              (+ Y_MARGIN @bottom)
+                                              (+ Y_MARGIN top)
                                               (- (frame-width (@contentView frame)) (* 2 X_MARGIN))
                                               20)
                            TextUnit: textUnit))
         (textUnitView setAutoresizingMask:2)
-        (@textUnitViews << textUnitView)
+        (@textUnitViews insertObject:textUnitView atIndex:i)
         (@contentView addSubview:textUnitView)
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"textUnitViewFrameDidChange"
          name:"NSViewFrameDidChangeNotification"
          object:textUnitView)
-        (@headerTableView reloadData)
-        (set @bottom (+ @bottom PADDING (frame-height (textUnitView frame)))))
+        (@headerTableView reloadData))
      
      (- dealloc is
         ((NSNotificationCenter defaultCenter)
@@ -180,11 +183,12 @@
      
      ;; appendTextUnit to add another paragraph on to the end
      ;; TODO: add  addTextUnitAtRow:(int)row
+     ;; This menu command is not in use. Instead using button/shortcut key
      (- appendTextUnit:(id)sender is
         (set window (self window))
-        (set controller (window windowController))
-        (debug "sending to #{controller}")
-        (controller addNewTextUnitToEnd))
+        (set controller (window windowController)) ;; Uhm, why is this nil?
+        (debug "controller: #{controller}")
+        (controller addTextUnitAfter:self))
      
      ;; reframeTextAreas: called whenever the height of one changes
      ;; TODO: consider faster ways of doing this. Maybe in C instead of NSNumbers.
@@ -219,7 +223,7 @@
      
      ;; FIXME: This gets called but doesn't call DocumentController's reloadHeaderTableData
      (- textDidEndEditing:(id)n is
-        (debug "done edititng")
+        (debug "Done editing, should call DocumentController.reloadHeaderTableData")
         (((self window) windowController) reloadHeaderTableData))
      
      ;; Intercept command key strokes
@@ -315,7 +319,7 @@
 ;; @class SimpleTextUnit
 ;; @description A text unit with text, translation, glosses and notes
 (class SimpleTextUnit is TextUnit
-     ;; FIXME: move attributes to the view and use setTypingAttributes to set
+     ;; FIXME: move attributes to the view and use setTypingAttributes: to set
      ;; the default values for each view.
      (set textAttributes
           (NSDictionary
