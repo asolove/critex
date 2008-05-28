@@ -111,8 +111,11 @@
          name:"NSViewFrameDidChangeNotification"
          object:@contentView)
         (self addNewTextUnitToEnd:self)
-        (self addNewTextUnitToEnd:self)
         (@headerTableView setDataSource:self))
+     
+     (- makeNextTextUnitFirstResponder:(id)previous is
+        (set index (+ (@textUnitViews indexOfObject:previous) 1))
+        (@window makeFirstResponder:(((@textUnitViews index) textViews) 0)))
      
      ;; @function textUnitForDocument
      ;; @description returns an initialized textUnit to be used in the document
@@ -141,7 +144,7 @@
          object:textUnitView)
         
         (textUnitView removeFromSuperview)
-         
+        
         (set undo ((self document) undoManager))
         ((undo prepareWithInvocationTarget:self)
          insertTextUnit:textUnit
@@ -176,7 +179,7 @@
                           (set frame ((@textUnitViews (- index 1)) frame))
                           (+ (frame-height frame) (frame-y frame)))
                      (else 0)))
-                     
+        
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
                                               X_MARGIN
@@ -195,7 +198,7 @@
          object:textUnitView)
         (@headerTableView reloadData)
         (self reframeAllTextUnitViews))
-        
+     
      
      (- dealloc is
         ((NSNotificationCenter defaultCenter)
@@ -251,6 +254,7 @@
      
      (- setLevel:(int)level is
         (set attributes (self attributesForLevel: level))
+        (@textUnit setLevel:level)
         (@textViews each:(do (view)
                              (set text (view textStorage))
                              (text beginEditing)
@@ -303,11 +307,12 @@
      
      ;; Intercept command key strokes
      (- (BOOL)textView:(id)aTextView doCommandBySelector:(SEL)aSelector is
-        (if (eq aSelector "insertTab:")
-            (then
-                 ((aTextView window) selectNextKeyView:self)
-                 t)
-            (else nil)))
+        (debug "#{aSelector}")
+        (case aSelector
+              ("insertTab:" ((aTextView window) selectNextKeyView:self))
+              ("scrollPageDown:" (((aTextView window) windowController)
+                                  makeNextTextUnitFirstResponder:self))
+              (else nil)))
      
      ;; Intercept frame size changes
      (- textViewFrameDidChange is
@@ -387,6 +392,7 @@
                                removeObserver:self
                                name:"NSViewFrameDidChangeNotification"
                                object:view)))))
+;; NuParseError: no open sexpr
 
 ;; @class TextUnit
 ;; @description A single block of text with multiple texts and note streams
