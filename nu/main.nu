@@ -11,5 +11,8 @@
 
 (global DEBUG t)    ;; turn off to remove log messages
 
+;; seed random (should be in App delegate)
+(NuMath srandom:((NSCalendarDate calendarDate) timeIntervalSince1970))
+
 ;; run the main Cocoa event loop
 (NSApplicationMain 0 nil)

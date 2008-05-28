@@ -244,10 +244,14 @@
      
      ;; Note adding, finding, editing methods
      (- addGloss:(id)note is
-        (set text ((@noteViews 0) textStorage))
-        (text beginEditing)
-        (text appendAttributedString:(note attributedString))
-        (text endEditing))
+        (set noteStorage ((@noteViews 0) textStorage))
+        (noteStorage beginEditing)
+        (noteStorage appendAttributedString:(note attributedString))
+        (noteStorage endEditing)
+        
+        (set textView)
+        
+        ((self window) makeFirstResponder:(@noteViews 0)))
      
      
      ;; Menu commands to intercept
@@ -475,7 +479,8 @@
 ;; @description attributed string of a note with appropriate
 ;; information
 (class DSNote is NSObject
-     (ivar (id) attributedString)
+     (ivar (id)  attributedString
+           (int) id)
      
      (ivar-accessors)
      
@@ -493,15 +498,16 @@
      
      (- (id)initWithLemma:(id)lemma text:(id)text is
         (super init)
+        (set @id (NuMath random))
+        (debug "#{@id}")
         (set lemma ((NSMutableAttributedString alloc) initWithString:lemma
                     attributes:lemmaAttributes))
         (set text ((NSAttributedString alloc) initWithString:" | #{text} "
-                    attributes:noteAttributes))
-        (debug "setting @aS")
+                   attributes:noteAttributes))
         
         (lemma appendAttributedString:text)
+        (lemma addAttribute:DSNoteIdAttribute value:@id range:(list 0 (lemma length)))
         (set @attributedString lemma)
-        (debug "end of init")
         self)
      
      (- string is
