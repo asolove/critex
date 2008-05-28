@@ -226,22 +226,33 @@
      (set textAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:16)
-                       forKey:"NSFont"))
+                       forKey:NSFontAttributeName))
      (set headerAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:20)
-                       forKey:"NSFont"))
+                       forKey:NSFontAttributeName))
      (set noteAttributes
           (NSDictionary
                        dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:13)
-                       forKey:"NSFont"))
+                       forKey:NSFontAttributeName))
      
      (- attributesForLevel:(int)level is
         (if (> level 0)
             (then headerAttributes)
             (else textAttributes)))
      
+     
+     ;; Note adding, finding, editing methods
+     (- addGloss:(id)note is
+        (set text ((@noteViews 0) textStorage))
+        (text beginEditing)
+        (text appendAttributedString:(note attributedString))
+        (text endEditing))
+     
+     
      ;; Menu commands to intercept
+     
+     
      ;; setLevel command to set the relative header level of text.
      (- setHeaderLevel1:(id)sender is
         (self setLevel:1))
@@ -255,6 +266,7 @@
      (- setLevel:(int)level is
         (set attributes (self attributesForLevel: level))
         (@textUnit setLevel:level)
+        
         (@textViews each:(do (view)
                              (set text (view textStorage))
                              (text beginEditing)
@@ -318,9 +330,14 @@
      (- textViewFrameDidChange is
         (self reframeTextAreas))
      
-     
      (- (id)addTextViewBoundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
-        (set view ((NSTextView alloc) initWithFrame:frame))
+        (self addTextViewSubclass:DSTextView boundTo:string withFrame:frame attributes:attributes))
+     
+     (- (id)addNoteViewBoundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
+        (self addTextViewSubclass:DSNoteView boundTo:string withFrame:frame attributes:attributes))
+     
+     (- (id)addTextViewSubclass:(id)class boundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
+        (set view ((class alloc) initWithFrame:frame))
         (view bind:"attributedString" toObject:string withKeyPath:"identity" options:nil)
         (self addSubview:view)
         
@@ -360,7 +377,6 @@
         (@textViews << (self addTextViewBoundTo:((@textUnit texts) 0)
                              withFrame:'(0 0 140 20)
                              attributes:textAttributes))
-        
         (@textViews << (self addTextViewBoundTo:((@textUnit texts) 1)
                              withFrame:'(150 0 150 20)
                              attributes:textAttributes))
@@ -370,7 +386,7 @@
         (self addSubview:@separator)
         
         
-        (@noteViews << (self addTextViewBoundTo:((@textUnit notes) 0)
+        (@noteViews << (self addNoteViewBoundTo:((@textUnit notes) 0)
                              withFrame:'(0 30 300 15)
                              attributes:noteAttributes))
         
@@ -392,7 +408,6 @@
                                removeObserver:self
                                name:"NSViewFrameDidChangeNotification"
                                object:view)))))
-;; NuParseError: no open sexpr
 
 ;; @class TextUnit
 ;; @description A single block of text with multiple texts and note streams
@@ -439,3 +454,58 @@
         self))
 
 ;; TODO: Add other TextUnitTypes
+
+;; @class DSTextView
+;; @description NSTextView suvclass with any additional features
+;; I might want to add...
+(class DSTextView is NSTextView
+     (- addGlossForSelection:(id)sender is
+        (set gloss ((DSNote alloc)
+                    initWithLemma:(self selectedSubstring)
+                    text:"there"))
+        ((self superview) addGloss:gloss)))
+
+;; @class DSNoteView
+;; @description NSTextView subclass for displaying notes includres
+;; methods for finding, appending, deleting DSNote objects to string.
+(class DSNoteView is NSTextView
+     )
+
+;; @class DSNote
+;; @description attributed string of a note with appropriate
+;; information
+(class DSNote is NSObject
+     (ivar (id) attributedString)
+     
+     (ivar-accessors)
+     
+     
+     (set lemmaAttributes
+          (NSDictionary dictionaryWithObjects:(array (NSColor colorWithCalibratedRed:.9 green:.9 blue:.9 alpha:1)
+                                                     (NSFont fontWithName:"Baskerville-Bold" size:13))
+               forKeys: (array NSBackgroundColorAttributeName NSFontAttributeName)))
+     
+     (set noteAttributes
+          (NSDictionary dictionaryWithObjects:(array (NSColor colorWithCalibratedRed:1 green:1 blue:1 alpha:1)
+                                                     (NSFont fontWithName:"Baskerville" size:13))
+               forKeys: (array NSBackgroundColorAttributeName NSFontAttributeName)))
+     
+     
+     (- (id)initWithLemma:(id)lemma text:(id)text is
+        (super init)
+        (set lemma ((NSMutableAttributedString alloc) initWithString:lemma
+                    attributes:lemmaAttributes))
+        (set text ((NSAttributedString alloc) initWithString:" | #{text} "
+                    attributes:noteAttributes))
+        (debug "setting @aS")
+        
+        (lemma appendAttributedString:text)
+        (set @attributedString lemma)
+        (debug "end of init")
+        self)
+     
+     (- string is
+        (@attributedString string))
+     
+     (- dealloc is
+        (@attributedString release)));; NuParseError: no open sexpr

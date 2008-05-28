@@ -18,12 +18,23 @@
      (if (DEBUG)
          (NSLog (eval (car margs)))))
 
+;; @macro array
+;; returns NSMutableArray of all evaluated arguments
+(macro array
+    (set __array (NSMutableArray array))
+    (margs each: (do (marg)
+                    (__array << (eval marg))))
+    __array)
+
 ;; Functions for dealing with frames
 (function frame-x (frame)
      (car frame))
 
 (function frame-y (frame)
      (car (cdr frame)))
+
+(function frame-size (frame)
+     (cdr (cdr frame)))
 
 (function frame-width (frame)
      (car (cdr (cdr frame))))
@@ -58,4 +69,17 @@
                      (+= result string)))
         result))
 
+(class NSTextView
+     (- selectedSubstring is
+        ((self attributedSubstringFromRange:(self selectedRange)) string)))
 
+; (class NSTextView
+;      (- initWithFrame:(NSRect)frame textStorageClass:(id)TextStorage is
+;         (set storage ((TextStorage alloc) init))
+;         (set layout ((NSLayoutManager alloc) init))
+;         (storage addLayoutManager:layout)
+;         (layout release)
+;         (set container ((NSTextContainer alloc) initWithContainerSize:(frame-size frame)))
+;         (layout addTextContainer:container)
+;         (((self class) alloc) initWithFrame:frame textContainer:container)))
+;

@@ -7,6 +7,8 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
+				<key>addGlossForSelection</key>
+				<string>id</string>
 				<key>addTextUnitAfterSelection</key>
 				<string>id</string>
 				<key>setHeaderLevel0</key>
