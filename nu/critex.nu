@@ -8,7 +8,7 @@
 ;; @class MyDocument
 ;; @discussion Each Critex document has textUnits and wikiPages
 (class MyDocument is NSDocument
-     (ivar (id) documentController
+     (ivar (id) textController
            (id) wikiController
            (id) textUnits
            (id) wikiPages)
@@ -24,26 +24,28 @@
         ((self windowControllers) release))
      
      (- makeWindowControllers is
-        (set @documentController ((DocumentController alloc)
-                                  initWithWindowNibName:"Document"
-                                  textUnits:@textUnits))
-        (self addWindowController:@documentController))
+        (set @textController ((TextController alloc)
+                              initWithWindowNibName:"TextWindow"
+                              textUnits:@textUnits))
+        (self addWindowController:@textController))
      
      ;; save and load
      (- (id)dataRepresentationOfType:(id)aType is
         (NSKeyedArchiver archivedDataWithRootObject:@textUnits))
      
+     ;; FIXME: load doesn't seem to work.
      (- (BOOL)loadDataRepresentation:(id)data ofType:(id)aType is
+        (debug "started to load representation")
         (set @textUnits (NSKeyedUnarchiver unarchiveObjectWithData:data))
         YES)
      
-     (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is
-        (NSPrintOperation printOperationWithView:@packerView printInfo:(self printInfo))))
+     (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is))
 
 ;; @class DocumentController
 ;; @description Controls the main document view and its contained textUnits
-(class DocumentController is NSWindowController
+(class TextController is NSWindowController
      (ivar (id) contentView         ;; document view inside right-side scrollView
+           (id) window              ;; need to set this in IB
            (id) textUnits           ;; array of TextUnit items
            (id) headerTableView     ;; TableView listing header TextUnits
            (id) textUnitViews)       ;; array of TextUnitViews
@@ -65,7 +67,6 @@
      ;; Set the frames of all textUnitViews to appropriate tops and heights
      ;; vertical sizes
      (- reframeAllTextUnitViews is
-        (debug "reframing all tuv's")
         (set top Y_MARGIN)
         (@textUnitViews each:
              (do (tuv)
@@ -100,7 +101,6 @@
      
      ;; FIXME: this isn't getting called from the TextUnitView. Why?
      (- reloadHeaderTableData is
-        (debug "Reload data call")
         (@headerTableView reloadData))
      
      ;; Setup views once the window is loaded
@@ -114,35 +114,69 @@
         (self addNewTextUnitToEnd:self)
         (@headerTableView setDataSource:self))
      
+     ;; @function textUnitForDocument
+     ;; @description returns an initialized textUnit to be used in the document
+     ;; TODO: Use document settings to choose appropriate TextUnit subclass
+     (- (id)textUnitForDocument is
+        ((SimpleTextUnit alloc) init))
+     
      ;; Add Text Unit commands:
+     
      (- addTextUnitAfter:(id)previous is
-        (debug "adding after #{previous}"))
+        (set index (@textUnitViews indexOfObject:previous))
+        (self insertTextUnitAtIndex:(+ index 1)))
      
-     ;; WindowController doesn't seem to have access to its window
-     (- addTextUnitAfterSelection:(id)sender is )
-     
-     ;; TODO: Use document settings to choose TextUnit subclass
      (- addNewTextUnitToEnd:(id)sender is
-        (self insertTextUnit: ((SimpleTextUnit alloc) init)
+        (self insertTextUnit: (self textUnitForDocument)
               atIndex:(@textUnits count)))
      
      (- removeTextUnitAtIndex:(int)index is
-        (set textUnit (@textUnits index))
-        (((self undoManager)
-          prepareWithInvocationTarget:self)
+        (debug "removing at: #{index}")
+        (set textUnit       (@textUnits index))
+        (set textUnitView   (@textUnitViews index))
+        
+        ((NSNotificationCenter defaultCenter)
+         removeObserver:self
+         name:"textUnitViewFrameDidChange"
+         object:textUnitView)
+        
+        (textUnitView removeFromSuperview)
+         
+        (set undo ((self document) undoManager))
+        ((undo prepareWithInvocationTarget:self)
          insertTextUnit:textUnit
          atIndex:index)
+        
+        (unless (undo isUndoing) (undo setActionName:"Remove Text Block"))
+        
+        (@textUnits     removeObjectAtIndex:index)
+        (@textUnitViews removeObjectAtIndex:index)
+        (self reframeAllTextUnitViews))
+     
+     (- insertTextUnitAtIndex:(int)i is
+        (self insertTextUnit: (self textUnitForDocument)
+              atIndex:i))
+     
+     ;; @function insertTextUnit
+     ;; @description: main insert Text Unit method, responsible for undo,
+     ;; reformatting, adding observer, etc.
+     (- insertTextUnit:(id) textUnit atIndex:(int)index is
+        (set undo ((self document) undoManager))
+        
+        ((undo prepareWithInvocationTarget:self)
+         removeTextUnitAtIndex:index)
+        
         (unless (undo isUndoing)
                 (undo setActionName:"Insert Text Block"))
-        (@textUnits removeObjectAtIndex:index))
-     
-     (- insertTextUnit:(id) textUnit atIndex:(int)i is
-        (@textUnits insertObject:textUnit atIndex:i)
-        (set top (if (> i 0)
+        
+        (@textUnits insertObject:textUnit atIndex:index)
+        
+        (set top (if (> index 0)
                      (then
-                          (set frame ((@textUnitViews (- i 1)) frame))
+                          (set frame ((@textUnitViews (- index 1)) frame))
                           (+ (frame-height frame) (frame-y frame)))
                      (else 0)))
+                     
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
                                               X_MARGIN
@@ -150,15 +184,18 @@
                                               (- (frame-width (@contentView frame)) (* 2 X_MARGIN))
                                               20)
                            TextUnit: textUnit))
+        
         (textUnitView setAutoresizingMask:2)
-        (@textUnitViews insertObject:textUnitView atIndex:i)
+        (@textUnitViews insertObject:textUnitView atIndex:index)
         (@contentView addSubview:textUnitView)
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"textUnitViewFrameDidChange"
          name:"NSViewFrameDidChangeNotification"
          object:textUnitView)
-        (@headerTableView reloadData))
+        (@headerTableView reloadData)
+        (self reframeAllTextUnitViews))
+        
      
      (- dealloc is
         ((NSNotificationCenter defaultCenter)
@@ -227,11 +264,8 @@
      ;; appendTextUnit to add another paragraph on to the end
      ;; TODO: add  addTextUnitAtRow:(int)row
      ;; This menu command is not in use. Instead using button/shortcut key
-     (- appendTextUnit:(id)sender is
-        (set window (self window))
-        (set controller (window windowController)) ;; Uhm, why is this nil?
-        (debug "controller: #{controller}")
-        (controller addTextUnitAfter:self))
+     (- addTextUnitAfterSelection:(id)sender is
+        (((self window) windowController) addTextUnitAfter:self))
      
      ;; reframeTextAreas: called whenever the height of one changes
      ;; TODO: consider faster ways of doing this. Maybe in C instead of NSNumbers.
@@ -264,9 +298,7 @@
      
      ;; delegate methods for textViews:
      
-     ;; FIXME: This gets called but doesn't call DocumentController's reloadHeaderTableData
      (- textDidEndEditing:(id)n is
-        (debug "Done editing, should call DocumentController.reloadHeaderTableData")
         (((self window) windowController) reloadHeaderTableData))
      
      ;; Intercept command key strokes
@@ -367,9 +399,9 @@
      
      ;; save and load
      (- encodeWithCoder:(id)coder is
-        (coder encodeObject:texts forKey:"texts")
-        (coder encodeObject:notes forKey:"notes")
-        (coder encodeInt:   level forKey:"level"))
+        (coder encodeObject:@texts forKey:"texts")
+        (coder encodeObject:@notes forKey:"notes")
+        (coder encodeInt:   @level forKey:"level"))
      
      (- (id)initWithCoder:(id)coder is
         (super init)

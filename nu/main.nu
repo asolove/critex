@@ -3,7 +3,7 @@
 
 (load "nu")      	;; essentials
 (load "cocoa")		;; wrapped frameworks
-; (load "console")
+(load "Nu:console")
 (load "utility")
 (load "critex")
 
