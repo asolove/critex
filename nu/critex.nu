@@ -9,10 +9,15 @@
 ;; @discussion Each Critex document has textUnits and wikiPages
 (class MyDocument is NSDocument
      (ivar (id) documentController
-           (id) wikiController)
+           (id) wikiController
+           (id) textUnits
+           (id) wikiPages)
      
+     ;; init and dealloc
      (- (id)init is
         (super init)
+        (set @textUnits ((NSMutableArray alloc) init))
+        (set @wikiPages ((NSMutableArray alloc) init))
         self)
      
      (- (void)dealloc is
@@ -20,13 +25,16 @@
      
      (- makeWindowControllers is
         (set @documentController ((DocumentController alloc)
-                                  initWithWindowNibName:"Document"))
+                                  initWithWindowNibName:"Document"
+                                  textUnits:@textUnits))
         (self addWindowController:@documentController))
      
-     (- (id)dataOfType:(id)aType error:(id)outError is
-        (NSKeyedArchiver archivedDataWithRootObject:documentController))
+     ;; save and load
+     (- (id)dataRepresentationOfType:(id)aType is
+        (NSKeyedArchiver archivedDataWithRootObject:@textUnits))
      
      (- (BOOL)loadDataRepresentation:(id)data ofType:(id)aType is
+        (set @textUnits (NSKeyedUnarchiver unarchiveObjectWithData:data))
         YES)
      
      (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is
@@ -40,11 +48,13 @@
            (id) headerTableView     ;; TableView listing header TextUnits
            (id) textUnitViews)       ;; array of TextUnitViews
      
-     (- initWithWindowNibName:(id)name is
+     (ivar-accessors)
+     
+     (- initWithWindowNibName:(id)name textUnits:(id)textUnits is
         (super initWithWindowNibName:name)
         
         (set @textUnitViews ((NSMutableArray alloc) init))
-        (set @textUnits ((NSMutableArray alloc) init))
+        (set @textUnits textUnits)
         self)
      
      (- (void)contentViewDidResize is
@@ -108,12 +118,25 @@
      (- addTextUnitAfter:(id)previous is
         (debug "adding after #{previous}"))
      
-     (- addNewTextUnitToEnd:(id)sender is
-        (self insertTextUnitAtIndex:(@textUnits count)))
+     ;; WindowController doesn't seem to have access to its window
+     (- addTextUnitAfterSelection:(id)sender is )
      
      ;; TODO: Use document settings to choose TextUnit subclass
-     (- insertTextUnitAtIndex:(int)i is
-        (set textUnit ((SimpleTextUnit alloc) init))
+     (- addNewTextUnitToEnd:(id)sender is
+        (self insertTextUnit: ((SimpleTextUnit alloc) init)
+              atIndex:(@textUnits count)))
+     
+     (- removeTextUnitAtIndex:(int)index is
+        (set textUnit (@textUnits index))
+        (((self undoManager)
+          prepareWithInvocationTarget:self)
+         insertTextUnit:textUnit
+         atIndex:index)
+        (unless (undo isUndoing)
+                (undo setActionName:"Insert Text Block"))
+        (@textUnits removeObjectAtIndex:index))
+     
+     (- insertTextUnit:(id) textUnit atIndex:(int)i is
         (@textUnits insertObject:textUnit atIndex:i)
         (set top (if (> i 0)
                      (then
@@ -158,6 +181,26 @@
      
      (ivar-accessors)
      
+     ;; Font styles. These should be in user preferences so they can be changed
+     
+     (set textAttributes
+          (NSDictionary
+                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:16)
+                       forKey:"NSFont"))
+     (set headerAttributes
+          (NSDictionary
+                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:20)
+                       forKey:"NSFont"))
+     (set noteAttributes
+          (NSDictionary
+                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:13)
+                       forKey:"NSFont"))
+     
+     (- attributesForLevel:(int)level is
+        (if (> level 0)
+            (then headerAttributes)
+            (else textAttributes)))
+     
      ;; Menu commands to intercept
      ;; setLevel command to set the relative header level of text.
      (- setHeaderLevel1:(id)sender is
@@ -170,7 +213,7 @@
         (self setLevel:0))
      
      (- setLevel:(int)level is
-        (set attributes (@textUnit setLevelAndReturnAttributes:level))
+        (set attributes (self attributesForLevel: level))
         (@textViews each:(do (view)
                              (set text (view textStorage))
                              (text beginEditing)
@@ -238,23 +281,27 @@
      (- textViewFrameDidChange is
         (self reframeTextAreas))
      
-     ;; @macro textview
-     ;; @description create an appropriately sized and bound TextUnit and add
-     ;; to the calling environments subviews.
-     (macro textview
-          (set __text (eval (car margs)))
-          (set __view ((NSTextView alloc) initWithFrame:(eval (car (cdr margs)))))
-          (__view bind:"attributedString" toObject:__text withKeyPath:"identity" options:nil)
-          (self addSubview:__view)
-          (__view setDelegate:self)
-          (__view setAllowsUndo:t)
-          
-          ((NSNotificationCenter defaultCenter)
-           addObserver:self
-           selector:"textViewFrameDidChange"
-           name:"NSViewFrameDidChangeNotification"
-           object:__view)
-          __view) ;; return view so we can grab it
+     
+     (- (id)addTextViewBoundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
+        (set view ((NSTextView alloc) initWithFrame:frame))
+        (view bind:"attributedString" toObject:string withKeyPath:"identity" options:nil)
+        (self addSubview:view)
+        
+        ;; would be nice if we could just get ligatures to always work
+        ;; FIXME: but this isn't doing it
+        ;;(__view setSelectedRange:(list 0 ((__view textStorage) length)))
+        ;;(__view useStandardLigatures:self)
+        
+        (view setDelegate:self)
+        (view setAllowsUndo:t)
+        (view setTypingAttributes:attributes)
+        
+        ((NSNotificationCenter defaultCenter)
+         addObserver:self
+         selector:"textViewFrameDidChange"
+         name:"NSViewFrameDidChangeNotification"
+         object:view)
+        view) ;; return view so we can grab it
      
      ;; @macro arrangeKeyOrder
      ;; @description given an array of views, connect their nextKeyView in a circle
@@ -271,15 +318,28 @@
         (set @textViews ((NSMutableArray alloc) init))
         (set @noteViews ((NSMutableArray alloc) init))
         
-        (@textViews << (textview ((@textUnit texts) 0) '(0    0 140  20)))
-        (@textViews << (textview ((@textUnit texts) 1) '(150  0 150  20)))
+        ;; TODO: More abstract system for specifying how a TextUnit
+        ;; should be displayed. Horizontal and vertical grouping, ratios, etc.
+        (@textViews << (self addTextViewBoundTo:((@textUnit texts) 0)
+                             withFrame:'(0 0 140 20)
+                             attributes:textAttributes))
+        
+        (@textViews << (self addTextViewBoundTo:((@textUnit texts) 1)
+                             withFrame:'(150 0 150 20)
+                             attributes:textAttributes))
         
         (set @separator ((NSBox alloc) initWithFrame:(list 0 25 300 1)))
         (@separator setBoxType: "NSBoxSeparator")
         (self addSubview:@separator)
         
-        (@noteViews << (textview ((@textUnit notes) 0) '(0   30 300  15)))
-        (@noteViews << (textview ((@textUnit notes) 1) '(0   50 300  15)))
+        
+        (@noteViews << (self addTextViewBoundTo:((@textUnit notes) 0)
+                             withFrame:'(0 30 300 15)
+                             attributes:noteAttributes))
+        
+        (@noteViews << (self addTextViewBoundTo:((@textUnit notes) 1)
+                             withFrame:'(0 50 300 15)
+                             attributes:noteAttributes))
         
         (arrangeKeyOrder (@textViews arrayByAddingObjectsFromArray:@noteViews))
         
@@ -305,6 +365,18 @@
      
      (ivar-accessors)
      
+     ;; save and load
+     (- encodeWithCoder:(id)coder is
+        (coder encodeObject:texts forKey:"texts")
+        (coder encodeObject:notes forKey:"notes")
+        (coder encodeInt:   level forKey:"level"))
+     
+     (- (id)initWithCoder:(id)coder is
+        (super init)
+        (self setTexts:(coder decodeObjectForKey:"texts"))
+        (self setNotes:(coder decodeObjectForKey:"Notes"))
+        (self setLevel:(coder decodeIntForKey:   "level")))
+     
      ;; init and dealloc
      (- (id)init is
         (super init)
@@ -319,38 +391,13 @@
 ;; @class SimpleTextUnit
 ;; @description A text unit with text, translation, glosses and notes
 (class SimpleTextUnit is TextUnit
-     ;; FIXME: move attributes to the view and use setTypingAttributes: to set
-     ;; the default values for each view.
-     (set textAttributes
-          (NSDictionary
-                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:16)
-                       forKey:"NSFont"))
-     (set headerAttributes
-          (NSDictionary
-                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:20)
-                       forKey:"NSFont"))
-     (set noteAttributes
-          (NSDictionary
-                       dictionaryWithObject:(NSFont fontWithName:"Baskerville" size:13)
-                       forKey:"NSFont"))
-     
-     (- setLevelAndReturnAttributes:(int)level is
-        (set @level level)
-        (if (> level 0)
-            (then headerAttributes)
-            (else textAttributes)))
-     
      (- (id) init is
         (super init)
         
-        (@texts addObject:((NSMutableAttributedString alloc)
-                           initWithString:"Hello"
-                           attributes:textAttributes))
-        (@texts addObject:((NSMutableAttributedString alloc)
-                           initWithString:" "
-                           attributes:textAttributes))
-        (@notes addObject:((NSAttributedString alloc) initWithString:" "
-                           attributes:noteAttributes))
-        (@notes addObject:((NSAttributedString alloc) initWithString:" "
-                           attributes:noteAttributes))
+        (@texts addObject:((NSAttributedString alloc) init))
+        (@texts addObject:((NSAttributedString alloc) init))
+        (@notes addObject:((NSAttributedString alloc) init))
+        (@notes addObject:((NSAttributedString alloc) init))
         self))
+
+;; TODO: Add other TextUnitTypes

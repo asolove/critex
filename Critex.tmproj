@@ -40,14 +40,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>53</integer>
+				<integer>66</integer>
 				<key>line</key>
-				<integer>114</integer>
+				<integer>280</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>108</integer>
+			<integer>252</integer>
 		</dict>
 		<key>nu/main.nu</key>
 		<dict>
@@ -88,6 +88,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{683, 100}, {758, 778}}</string>
+	<string>{{682, 100}, {758, 778}}</string>
 </dict>
 </plist>

@@ -17,6 +17,8 @@
 			<dict>
 				<key>addNewTextUnitToEnd</key>
 				<string>id</string>
+				<key>addTextUnitAfterSelection</key>
+				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>DocumentController</string>

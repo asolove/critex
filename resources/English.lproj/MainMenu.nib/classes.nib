@@ -7,7 +7,7 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
-				<key>appendTextUnit</key>
+				<key>addTextUnitAfterSelection</key>
 				<string>id</string>
 				<key>setHeaderLevel0</key>
 				<string>id</string>
