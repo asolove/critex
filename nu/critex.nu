@@ -64,6 +64,14 @@
         (@textUnitViews each: (do (textUnitView)
                                   (textUnitView reframeTextAreas))))
      
+     (- scrollToIndex:(int)index is
+        (debug "scrolling to: #{index}")
+        (@contentView scrollPoint:(scroll-to-frame ((@textUnitViews index) frame))))
+     
+     (- tableViewSelectionDidChange:(id)n is
+        (debug "selection changed")
+        (self scrollToIndex:(@headerTableView selectedRow)))
+     
      ;; Set the frames of all textUnitViews to appropriate tops and heights
      ;; vertical sizes
      (- reframeAllTextUnitViews is
@@ -112,7 +120,8 @@
          object:@contentView)
         (self addNewTextUnitToEnd:self)
         (self makeFirstResponderTextUnitIndex:0)
-        (@headerTableView setDataSource:self))
+        (@headerTableView setDataSource:self)
+        (@headerTableView setDelegate:self))
      
      (- makeNextTextUnitFirstResponder:(id)previous is
         (self makeFirstResponderTextUnitIndex:
@@ -124,7 +133,11 @@
      
      (- makeFirstResponderTextUnitIndex:(int)i is
         (unless (or (< i 0) (>= i (@textUnitViews count)))
-                ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0))))
+                ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0)))
+        ;; FIXME: Test if first responder is not in clipped view 
+        ;; and scroll
+        ;(self scrollToIndex:i)
+        )
      
      ;; @function textUnitForDocument
      ;; @description returns an initialized textUnit to be used in the document
@@ -163,7 +176,8 @@
         
         (@textUnits     removeObjectAtIndex:index)
         (@textUnitViews removeObjectAtIndex:index)
-        (self reframeAllTextUnitViews))
+        (self reframeAllTextUnitViews)
+        (self makeFirstResponderTextUnitIndex:(- index 1)))
      
      (- insertTextUnitAtIndex:(int)i is
         (self insertTextUnit: (self textUnitForDocument)
@@ -470,13 +484,15 @@
 ;; TODO: Add other TextUnitTypes
 
 ;; @class DSTextView
-;; @description NSTextView suvclass with any additional features
-;; I might want to add...
+;; @description NSTextView suvclass
 (class DSTextView is NSTextView
+     
+     ;; TODO: Add corresponding methods for footnotes
+     
      (- addGlossForSelection:(id)sender is
         (set gloss ((DSNote alloc)
                     initWithLemma:(self selectedSubstring)
-                    text:"there"))
+                    text:""))
         ((self textStorage) addAttribute:DSNoteIdAttribute value:(gloss id) range:(self selectedRange))
         ((self superview) addGloss:gloss forTextView:self)))
 
@@ -484,6 +500,8 @@
 ;; @description NSTextView subclass for displaying notes includres
 ;; methods for finding, appending, deleting DSNote objects to string.
 (class DSNoteView is NSTextView
+     ;; TODO: Add methods to prevent selecting/deleting multiple notes
+     
      )
 
 ;; @class DSNote

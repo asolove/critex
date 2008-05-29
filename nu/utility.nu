@@ -35,6 +35,12 @@
 
 (function frame-size (frame)
      (cdr (cdr frame)))
+     
+(function frame-origin (frame)
+    (list (car frame) (car (cdr frame))))
+    
+(function scroll-to-frame (frame)
+    (list (car frame) (- (car (cdr frame)) Y_MARGIN)))
 
 (function frame-width (frame)
      (car (cdr (cdr frame))))
