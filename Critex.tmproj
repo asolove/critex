@@ -35,33 +35,19 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>nu/attribute-names.nu</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>40</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>nu/critex.nu</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>14</integer>
+				<integer>5</integer>
 				<key>line</key>
-				<integer>488</integer>
+				<integer>242</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>473</integer>
+			<integer>230</integer>
 		</dict>
 		<key>nu/main.nu</key>
 		<dict>
@@ -70,7 +56,7 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>10</integer>
+				<integer>15</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -97,7 +83,6 @@
 		<string>Nukefile</string>
 		<string>nu/main.nu</string>
 		<string>nu/critex.nu</string>
-		<string>nu/attribute-names.nu</string>
 		<string>nu/utility.nu</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>

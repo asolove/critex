@@ -111,11 +111,20 @@
          name:"NSViewFrameDidChangeNotification"
          object:@contentView)
         (self addNewTextUnitToEnd:self)
+        (self makeFirstResponderTextUnitIndex:0)
         (@headerTableView setDataSource:self))
      
      (- makeNextTextUnitFirstResponder:(id)previous is
-        (set index (+ (@textUnitViews indexOfObject:previous) 1))
-        (@window makeFirstResponder:(((@textUnitViews index) textViews) 0)))
+        (self makeFirstResponderTextUnitIndex:
+              (+ (@textUnitViews indexOfObject:previous) 1)))
+     
+     (- makePreviousTextUnitFirstResponder:(id)previous is
+        (self makeFirstResponderTextUnitIndex:
+              (- (@textUnitViews indexOfObject:previous) 1)))
+     
+     (- makeFirstResponderTextUnitIndex:(int)i is
+        (unless (or (< i 0) (>= i (@textUnitViews count)))
+                ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0))))
      
      ;; @function textUnitForDocument
      ;; @description returns an initialized textUnit to be used in the document
@@ -197,7 +206,8 @@
          name:"NSViewFrameDidChangeNotification"
          object:textUnitView)
         (@headerTableView reloadData)
-        (self reframeAllTextUnitViews))
+        (self reframeAllTextUnitViews)
+        (self makeFirstResponderTextUnitIndex:index))
      
      
      (- dealloc is
@@ -208,6 +218,7 @@
         (@textUnits release)
         (@textUnitViews release)
         (@contentView release)))
+;; NuParseError: no open sexpr
 
 
 ;; @class TextUnitView
@@ -243,13 +254,11 @@
      
      
      ;; Note adding, finding, editing methods
-     (- addGloss:(id)note is
+     (- addGloss:(id)note forTextView:(id)textView is
         (set noteStorage ((@noteViews 0) textStorage))
         (noteStorage beginEditing)
         (noteStorage appendAttributedString:(note attributedString))
         (noteStorage endEditing)
-        
-        (set textView)
         
         ((self window) makeFirstResponder:(@noteViews 0)))
      
@@ -323,11 +332,12 @@
      
      ;; Intercept command key strokes
      (- (BOOL)textView:(id)aTextView doCommandBySelector:(SEL)aSelector is
-        (debug "#{aSelector}")
         (case aSelector
-              ("insertTab:" ((aTextView window) selectNextKeyView:self))
+              ("insertTab:" ((aTextView window) selectNextKeyView:self) t)
               ("scrollPageDown:" (((aTextView window) windowController)
-                                  makeNextTextUnitFirstResponder:self))
+                                  makeNextTextUnitFirstResponder:self) t)
+              ("scrollPageUp:" (((aTextView window) windowController)
+                                makePreviousTextUnitFirstResponder:self) t)
               (else nil)))
      
      ;; Intercept frame size changes
@@ -467,7 +477,8 @@
         (set gloss ((DSNote alloc)
                     initWithLemma:(self selectedSubstring)
                     text:"there"))
-        ((self superview) addGloss:gloss)))
+        ((self textStorage) addAttribute:DSNoteIdAttribute value:(gloss id) range:(self selectedRange))
+        ((self superview) addGloss:gloss forTextView:self)))
 
 ;; @class DSNoteView
 ;; @description NSTextView subclass for displaying notes includres
@@ -499,7 +510,6 @@
      (- (id)initWithLemma:(id)lemma text:(id)text is
         (super init)
         (set @id (NuMath random))
-        (debug "#{@id}")
         (set lemma ((NSMutableAttributedString alloc) initWithString:lemma
                     attributes:lemmaAttributes))
         (set text ((NSAttributedString alloc) initWithString:" | #{text} "
