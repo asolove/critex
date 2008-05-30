@@ -27,10 +27,10 @@
         ((self windowControllers) release))
      
      (- makeWindowControllers is
-        (set @textController ((TextController alloc)
-                              initWithWindowNibName:"TextWindow"
-                              textUnits:@textUnits))
-        (self addWindowController:@textController))
+        (set @textController ((TextController alloc) initWithTextUnits:@textUnits))
+        (set @wikiController ((WikiController alloc) initWithWikiPages:@wikiPages))
+        (self addWindowController:@textController)
+        (self addWindowController:@wikiController))
      
      ;; save and load
      (- (id)dataRepresentationOfType:(id)aType is
@@ -39,10 +39,32 @@
      ;; FIXME: load doesn't seem to work.
      (- (BOOL)loadDataRepresentation:(id)data ofType:(id)aType is
         (set @textUnits (NSKeyedUnarchiver unarchiveObjectWithData:data))
-        (debug "textUnits: #{(@textUnits count)}")
         YES)
      
      (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is))
+
+;; @class WikiPage
+;; @descripn One page in the wiki, could be Core Data in the future
+(class WikiPage is NSObject
+     (ivar (id)title
+           (id)tags
+           (id)text)
+     
+     (ivar-accessors))
+
+;; @class WikiController
+;; @description controls the Wiki HUD window
+(class WikiController is NSWindowController
+     (ivar (id) wikiPages
+           (id) pagesController)
+     
+     (ivar-accessors)
+     
+     (- initWithWikiPages:(id)wikiPages is
+        (super initWithWindowNibName:"WikiWindow")
+        (set @wikiPages wikiPages)
+        self))
+
 
 ;; @class DocumentController
 ;; @description Controls the main document view and its contained textUnits
@@ -51,14 +73,13 @@
            (id) window              ;; need to set this in IB
            (id) drawer
            (id) textUnits           ;; array of TextUnit items
-           (id) savedTextUnits      ;; array of saved textUnits waiting to have views added
            (id) headerTableView     ;; TableView listing header TextUnits
            (id) textUnitViews)       ;; array of TextUnitViews
      
      (ivar-accessors)
      
-     (- initWithWindowNibName:(id)name textUnits:(id)textUnits is
-        (super initWithWindowNibName:name)
+     (- initWithTextUnits:(id)textUnits is
+        (super initWithWindowNibName:"TextWindow")
         (set @textUnitViews ((NSMutableArray alloc) init))
         (set @textUnits textUnits)
         self)
@@ -301,6 +322,14 @@
         
         ((self window) makeFirstResponder:(@noteViews 0)))
      
+     (- addFootnote:(id)note forTextView:(id)textView is
+        (set noteStorage ((@noteViews 1) textStorage))
+        (noteStorage beginEditing)
+        (noteStorage appendAttributedString:(note attributedString))
+        (noteStorage endEditing)
+        
+        ((self window) makeFirstResponder:(@noteViews 1)))
+     
      
      ;; Menu commands to intercept
      
@@ -481,22 +510,18 @@
      
      
      (- encodeWithCoder:(id)coder is
-        (debug "encoding text unit")
         (coder encodeObject:@mainText forKey:"mainText")
         (coder encodeObject:@transText forKey:"transText")
         (coder encodeObject:@footNotes forKey:"footNotes")
         (coder encodeObject:@glossNotes forKey:"glossNotes")
-        (coder encodeInt:   @level forKey:"level")
-        (debug "one string: #{@mainText}"))
+        (coder encodeInt:   @level forKey:"level"))
      
      (- (id)initWithCoder:(id)coder is
-        (debug "initing from encoder")
         (set @mainText (coder decodeObjectForKey:"mainText"))
         (set @transText (coder decodeObjectForKey:"transText"))
         (set @footNotes (coder decodeObjectForKey:"footNotes"))
         (set @glossNotes (coder decodeObjectForKey:"glossNotes"))
         (set @level (coder decodeIntForKey:"level"))
-        (debug "one string: #{@mainText}")
         self)
      
      ;; init and dealloc
@@ -521,7 +546,12 @@
 ;; @description NSTextView suvclass
 (class DSTextView is NSTextView
      
-     ;; TODO: Add corresponding methods for footnotes
+     (- addFootnoteForSelection:(id)sender is
+        (set note ((DSNote alloc)
+                   initWithLemma:(self selectedSubstring)
+                   text:"\n"))
+        ((self textStorage) addAttribute:DSNoteIdAttribute value:(note id) range:(self selectedRange))
+        ((self superview) addFootnote:note forTextView:self))
      
      (- addGlossForSelection:(id)sender is
         (set gloss ((DSNote alloc)
