@@ -13,10 +13,13 @@
            (id) textUnits
            (id) wikiPages)
      
+     (ivar-accessors)
+     
      ;; init and dealloc
      (- (id)init is
         (super init)
         (set @textUnits ((NSMutableArray alloc) init))
+        (@textUnits << ((SimpleTextUnit alloc) init)) ; in case this is a new doc
         (set @wikiPages ((NSMutableArray alloc) init))
         self)
      
@@ -48,6 +51,7 @@
            (id) window              ;; need to set this in IB
            (id) drawer
            (id) textUnits           ;; array of TextUnit items
+           (id) savedTextUnits      ;; array of saved textUnits waiting to have views added
            (id) headerTableView     ;; TableView listing header TextUnits
            (id) textUnitViews)       ;; array of TextUnitViews
      
@@ -65,7 +69,6 @@
                                   (textUnitView reframeTextAreas))))
      
      (- toggleDrawer:(id)sender is
-        (debug "toggle drawer")
         (@drawer toggle:self))
      
      (- scrollToIndex:(int)index is
@@ -95,7 +98,6 @@
      ;; Data source methods for headerTableView
      ;; TODO: This should be an outlineView, but I'm afraid of NSTreeController
      (- (int)numberOfRowsInTableView:(id)tableView is
-        (debug "count: #{(@textUnits count)}")
         (@textUnits count))
      
      ;; TODO: unless we switch to an outline view, should return strings with
@@ -108,7 +110,6 @@
            (((((@textUnitViews row) textViews) 0) textStorage) string)))
      
      (- headerTableFont is
-        (debug "called font")
         (NSFont fontWithName:"Baskerville" size:13)
         ;(NSFont systemFontOfSize:13)
         ; FIXME: return nicer-looking font and change tableView rowHeight
@@ -128,11 +129,11 @@
          object:@contentView)
         
         ;; display saved data being loaded
-        (if (> (@textUnits count) 1)
+        (if @textUnits
             (debug "have text units")
-            (@textUnits each: (do (textUnit) (self appendViewForTextUnit:textUnit)))
-            (debug "finished showing text units")
-            (else (self addNewTextUnitToEnd:self)))
+            (@textUnits each: (do (textUnit)
+                                  (self insertViewForTextUnit:textUnit)))
+            (debug "finished showing text units"))
         
         (@headerTableView setDataSource:self)
         (@headerTableView setRowHeight:20)
@@ -148,11 +149,18 @@
               (- (@textUnitViews indexOfObject:previous) 1)))
      
      (- makeFirstResponderTextUnitIndex:(int)i is
+        (debug "before compare")
+        (< i 0)
+        (>= i (@textUnitViews count))
+        (debug "after compares")
+        
         (unless (or (< i 0) (>= i (@textUnitViews count)))
                 ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0)))
         ;; FIXME: Test if first responder is not in clipped view
         ;; and scroll
         ;(self scrollToIndex:i)
+        
+        (debug "end of make next...")
         )
      
      ;; @function textUnitForDocument
@@ -170,6 +178,7 @@
      (- addNewTextUnitToEnd:(id)sender is
         (self insertTextUnit: (self textUnitForDocument)
               atIndex:(@textUnits count)))
+     
      
      (- removeTextUnitAtIndex:(int)index is
         (debug "removing at: #{index}")
@@ -199,29 +208,24 @@
         (self insertTextUnit: (self textUnitForDocument)
               atIndex:i))
      
-     (- appendViewForTextUnit:(id) textUnit is
-        (self insertTextUnit:textUnit atIndex:(@textUnitViews count)))
-     
      ;; @function insertTextUnit
      ;; @description: main insert Text Unit method, responsible for undo,
      ;; reformatting, adding observer, etc.
      (- insertTextUnit:(id) textUnit atIndex:(int)index is
-        (set undo ((self document) undoManager))
-        
-        ((undo prepareWithInvocationTarget:self)
-         removeTextUnitAtIndex:index)
-        
-        (unless (undo isUndoing)
-                (undo setActionName:"Insert Text Block"))
         
         (@textUnits insertObject:textUnit atIndex:index)
+        (self insertViewForTextUnit:textUnit))
+     
+     (- insertViewForTextUnit:(id)textUnit is
         
-        (set top (if (> index 0)
+        ;; can't call this unless textUnit is already in @textUnits
+        (set index (@textUnits indexOfObject:textUnit))
+        
+        (set top (if (and (> (@textUnitViews count) 0) (> index 0))
                      (then
                           (set frame ((@textUnitViews (- index 1)) frame))
                           (+ (frame-height frame) (frame-y frame)))
                      (else 0)))
-        
         
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
@@ -231,16 +235,17 @@
                                               20)
                            TextUnit: textUnit))
         
-        
         (textUnitView setAutoresizingMask:2)
         (@textUnitViews insertObject:textUnitView atIndex:index)
         (@contentView addSubview:textUnitView)
+        
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"textUnitViewFrameDidChange"
          name:"NSViewFrameDidChangeNotification"
          object:textUnitView)
         (@headerTableView reloadData)
+        
         (self reframeAllTextUnitViews)
         (self makeFirstResponderTextUnitIndex:index))
      
@@ -336,14 +341,15 @@
         (set frame (self frame))
         (set width (frame-width frame))
         (set each-width (/ (- width (* (- (@textViews count) 1) PADDING))
-                           (@textViews count)))
+                           3))
         (set top 0)
         (set left 0)
-        (@textViews each: (do (textView)
-                              (set height (frame-height (textView frame)))
-                              (textView setFrame:(list left 0 each-width height))
-                              (+= left each-width PADDING)
-                              (if (> height top) (set top height))))
+        ('(0 1) each: (do (i)
+                          (set textView (@textViews i))
+                          (set height (frame-height (textView frame)))
+                          (textView setFrame:(list left 0 (* (+ 1 i) each-width) height))
+                          (+= left each-width PADDING)
+                          (if (> height top) (set top height))))
         
         (+= top PADDING)
         (@separator setFrame:(list 0 top width 2))
@@ -380,15 +386,15 @@
      (- textViewFrameDidChange is
         (self reframeTextAreas))
      
-     (- (id)addTextViewBoundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
-        (self addTextViewSubclass:DSTextView boundTo:string withFrame:frame attributes:attributes))
+     (- (id)addTextViewBoundTo:(id)object keyPath:(id)keyPath withFrame:(NSRect)frame attributes:(id)attributes is
+        (self addTextViewSubclass:DSTextView boundTo:object keyPath:keyPath withFrame:frame attributes:attributes))
      
-     (- (id)addNoteViewBoundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
-        (self addTextViewSubclass:DSNoteView boundTo:string withFrame:frame attributes:attributes))
+     (- (id)addNoteViewBoundTo:(id)object keyPath:(id)keyPath withFrame:(NSRect)frame attributes:(id)attributes is
+        (self addTextViewSubclass:DSNoteView boundTo:object keyPath:keyPath withFrame:frame attributes:attributes))
      
-     (- (id)addTextViewSubclass:(id)class boundTo:(id)string withFrame:(NSRect)frame attributes:(id)attributes is
+     (- (id)addTextViewSubclass:(id)class boundTo:(id)object keyPath:(id)keyPath withFrame:(NSRect)frame attributes:(id)attributes is
         (set view ((class alloc) initWithFrame:frame))
-        (view bind:"attributedString" toObject:string withKeyPath:"identity" options:nil)
+        (view bind:"attributedString" toObject:object withKeyPath:keyPath options:nil)
         (self addSubview:view)
         
         ;; would be nice if we could just get ligatures to always work
@@ -416,19 +422,20 @@
                              (__last_view setNextKeyView:__view)
                              (set __last_view __view))))
      
-     (- (id)initWithFrame:(NSRect)frame TextUnit:(id)tu is
+     (- (id)initWithFrame:(NSRect)frame TextUnit:(id)textUnit is
         (super initWithFrame:frame)
-        (set @textUnit tu)
         (set @textViews ((NSMutableArray alloc) init))
         (set @noteViews ((NSMutableArray alloc) init))
         
         ;; TODO: More abstract system for specifying how a TextUnit
         ;; should be displayed. Horizontal and vertical grouping, ratios, etc.
-        (@textViews << (self addTextViewBoundTo:((@textUnit texts) 0)
-                             withFrame:'(0 0 140 20)
+        (@textViews << (self addTextViewBoundTo:textUnit
+                             keyPath:"mainText"
+                             withFrame:'(0 0 100 20)
                              attributes:textAttributes))
-        (@textViews << (self addTextViewBoundTo:((@textUnit texts) 1)
-                             withFrame:'(150 0 150 20)
+        (@textViews << (self addTextViewBoundTo:textUnit
+                             keyPath:"transText"
+                             withFrame:'(110 0 190 20)
                              attributes:textAttributes))
         
         (set @separator ((NSBox alloc) initWithFrame:(list 0 25 300 1)))
@@ -436,11 +443,13 @@
         (self addSubview:@separator)
         
         
-        (@noteViews << (self addNoteViewBoundTo:((@textUnit notes) 0)
+        (@noteViews << (self addNoteViewBoundTo:textUnit
+                             keyPath:"glossNotes"
                              withFrame:'(0 30 300 15)
                              attributes:noteAttributes))
         
-        (@noteViews << (self addTextViewBoundTo:((@textUnit notes) 1)
+        (@noteViews << (self addTextViewBoundTo:textUnit
+                             keyPath:"footNotes"
                              withFrame:'(0 50 300 15)
                              attributes:noteAttributes))
         
@@ -461,48 +470,50 @@
 
 ;; @class TextUnit
 ;; @description A single block of text with multiple texts and note streams
-(class TextUnit is NSObject
-     (ivar (id)  texts
-           (id)  notes
-           (int) level)
+(class SimpleTextUnit is NSObject
+     (ivar (id) mainText
+           (id) transText
+           (id) footNotes
+           (id) glossNotes
+           (int)level)
      
      (ivar-accessors)
      
-     ;; save and load
+     
      (- encodeWithCoder:(id)coder is
-        (coder encodeObject:@texts forKey:"texts")
-        (coder encodeObject:@notes forKey:"notes")
-        (coder encodeInt:   @level forKey:"level"))
+        (debug "encoding text unit")
+        (coder encodeObject:@mainText forKey:"mainText")
+        (coder encodeObject:@transText forKey:"transText")
+        (coder encodeObject:@footNotes forKey:"footNotes")
+        (coder encodeObject:@glossNotes forKey:"glossNotes")
+        (coder encodeInt:   @level forKey:"level")
+        (debug "one string: #{@mainText}"))
      
      (- (id)initWithCoder:(id)coder is
-        (super init)
-        (self setTexts:(coder decodeObjectForKey:"texts"))
-        (self setNotes:(coder decodeObjectForKey:"notes"))
-        (self setLevel:(coder decodeIntForKey:   "level"))
+        (debug "initing from encoder")
+        (set @mainText (coder decodeObjectForKey:"mainText"))
+        (set @transText (coder decodeObjectForKey:"transText"))
+        (set @footNotes (coder decodeObjectForKey:"footNotes"))
+        (set @glossNotes (coder decodeObjectForKey:"glossNotes"))
+        (set @level (coder decodeIntForKey:"level"))
+        (debug "one string: #{@mainText}")
         self)
      
      ;; init and dealloc
      (- (id)init is
         (super init)
-        (set @texts ((NSMutableArray alloc) init))
-        (set @notes ((NSMutableArray alloc) init))
+        (set @mainText ((NSAttributedString alloc) init))
+        (set @transText ((NSAttributedString alloc) init))
+        (set @footNotes ((NSAttributedString alloc) init))
+        (set @glossNotes ((NSAttributedString alloc) init))
+        (set @level 0)
         self)
      
      (- dealloc is
-        (texts release)
-        (notes reelase)))
-
-;; @class SimpleTextUnit
-;; @description A text unit with text, translation, glosses and notes
-(class SimpleTextUnit is TextUnit
-     (- (id) init is
-        (super init)
-        
-        (@texts addObject:((NSAttributedString alloc) init))
-        (@texts addObject:((NSAttributedString alloc) init))
-        (@notes addObject:((NSAttributedString alloc) init))
-        (@notes addObject:((NSAttributedString alloc) init))
-        self))
+        (@mainText release)
+        (@transText release)
+        (@footNotes release)
+        (@glossNotes release)))
 
 ;; TODO: Add other TextUnitTypes
 
