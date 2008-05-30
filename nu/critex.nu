@@ -35,8 +35,8 @@
      
      ;; FIXME: load doesn't seem to work.
      (- (BOOL)loadDataRepresentation:(id)data ofType:(id)aType is
-        (debug "started to load representation")
         (set @textUnits (NSKeyedUnarchiver unarchiveObjectWithData:data))
+        (debug "textUnits: #{(@textUnits count)}")
         YES)
      
      (- (id) printOperationWithSettings:(id)printSettings error:(id *)errorReference is))
@@ -54,7 +54,6 @@
      
      (- initWithWindowNibName:(id)name textUnits:(id)textUnits is
         (super initWithWindowNibName:name)
-        
         (set @textUnitViews ((NSMutableArray alloc) init))
         (set @textUnits textUnits)
         self)
@@ -105,7 +104,10 @@
            (((((@textUnitViews row) textViews) 0) textStorage) string)))
      
      (- headerTableFont is
-        (NSFont menuFontOfSize:0))
+        (NSFont fontWithName:"Baskerville" size:13)
+        (NSFont systemFontOfSize:13)
+        ; FIXME: return nicer-looking font and change tableView rowHeight
+        )
      
      ;; FIXME: this isn't getting called from the TextUnitView. Why?
      (- reloadHeaderTableData is
@@ -121,6 +123,7 @@
         (self addNewTextUnitToEnd:self)
         (self makeFirstResponderTextUnitIndex:0)
         (@headerTableView setDataSource:self)
+        (@headerTableView setRowHeight:20)
         (@headerTableView setDelegate:self))
      
      (- makeNextTextUnitFirstResponder:(id)previous is
@@ -134,7 +137,7 @@
      (- makeFirstResponderTextUnitIndex:(int)i is
         (unless (or (< i 0) (>= i (@textUnitViews count)))
                 ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0)))
-        ;; FIXME: Test if first responder is not in clipped view 
+        ;; FIXME: Test if first responder is not in clipped view
         ;; and scroll
         ;(self scrollToIndex:i)
         )
@@ -232,7 +235,6 @@
         (@textUnits release)
         (@textUnitViews release)
         (@contentView release)))
-;; NuParseError: no open sexpr
 
 
 ;; @class TextUnitView
@@ -346,8 +348,10 @@
      
      ;; Intercept command key strokes
      (- (BOOL)textView:(id)aTextView doCommandBySelector:(SEL)aSelector is
+        (debug "#{aSelector}")
         (case aSelector
               ("insertTab:" ((aTextView window) selectNextKeyView:self) t)
+              ("insertBacktab:" ((aTextView window) selectPreviousKeyView:self) t)
               ("scrollPageDown:" (((aTextView window) windowController)
                                   makeNextTextUnitFirstResponder:self) t)
               ("scrollPageUp:" (((aTextView window) windowController)
@@ -453,10 +457,14 @@
         (coder encodeInt:   @level forKey:"level"))
      
      (- (id)initWithCoder:(id)coder is
+        (debug "initing Text Unit with coder")
         (super init)
         (self setTexts:(coder decodeObjectForKey:"texts"))
-        (self setNotes:(coder decodeObjectForKey:"Notes"))
-        (self setLevel:(coder decodeIntForKey:   "level")))
+        (self setNotes:(coder decodeObjectForKey:"notes"))
+        (self setLevel:(coder decodeIntForKey:   "level"))
+        (debug "done initing self with coder")
+        (debug "first note is #{((self notes) 0)}")
+        self)
      
      ;; init and dealloc
      (- (id)init is
@@ -542,4 +550,4 @@
         (@attributedString string))
      
      (- dealloc is
-        (@attributedString release)));; NuParseError: no open sexpr
+        (@attributedString release)))

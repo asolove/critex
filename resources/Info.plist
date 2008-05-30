@@ -9,10 +9,8 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>pp</string>
+				<string>crtx</string>
 			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>PPApp.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>DocumentType</string>
 			<key>CFBundleTypeRole</key>
@@ -23,14 +21,8 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleHelpBookFolder</key>
-	<string>PagePackerHelp</string>
-	<key>CFBundleHelpBookName</key>
-	<string>PagePacker Help</string>
-	<key>CFBundleIconFile</key>
-	<string>PPApp</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.bignerdranch.PagePacker</string>
+	<string>ds.text.Critex</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -38,7 +30,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>crtx</string>
 	<key>CFBundleVersion</key>
 	<string>1.2</string>
 	<key>NSAppleScriptEnabled</key>
@@ -47,7 +39,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>OSAScriptingDefinition</key>
-	<string>PagePacker.sdef</string>
 </dict>
 </plist>
