@@ -46,6 +46,7 @@
 (class TextController is NSWindowController
      (ivar (id) contentView         ;; document view inside right-side scrollView
            (id) window              ;; need to set this in IB
+           (id) drawer
            (id) textUnits           ;; array of TextUnit items
            (id) headerTableView     ;; TableView listing header TextUnits
            (id) textUnitViews)       ;; array of TextUnitViews
@@ -63,12 +64,14 @@
         (@textUnitViews each: (do (textUnitView)
                                   (textUnitView reframeTextAreas))))
      
+     (- toggleDrawer:(id)sender is
+        (debug "toggle drawer")
+        (@drawer toggle:self))
+     
      (- scrollToIndex:(int)index is
-        (debug "scrolling to: #{index}")
         (@contentView scrollPoint:(scroll-to-frame ((@textUnitViews index) frame))))
      
      (- tableViewSelectionDidChange:(id)n is
-        (debug "selection changed")
         (self scrollToIndex:(@headerTableView selectedRow)))
      
      ;; Set the frames of all textUnitViews to appropriate tops and heights
@@ -92,6 +95,7 @@
      ;; Data source methods for headerTableView
      ;; TODO: This should be an outlineView, but I'm afraid of NSTreeController
      (- (int)numberOfRowsInTableView:(id)tableView is
+        (debug "count: #{(@textUnits count)}")
         (@textUnits count))
      
      ;; TODO: unless we switch to an outline view, should return strings with
@@ -104,8 +108,9 @@
            (((((@textUnitViews row) textViews) 0) textStorage) string)))
      
      (- headerTableFont is
+        (debug "called font")
         (NSFont fontWithName:"Baskerville" size:13)
-        (NSFont systemFontOfSize:13)
+        ;(NSFont systemFontOfSize:13)
         ; FIXME: return nicer-looking font and change tableView rowHeight
         )
      
@@ -115,16 +120,24 @@
      
      ;; Setup views once the window is loaded
      (- windowDidLoad is
+        (debug "did load window")
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"contentViewDidResize"
          name:"NSViewFrameDidChangeNotification"
          object:@contentView)
-        (self addNewTextUnitToEnd:self)
-        (self makeFirstResponderTextUnitIndex:0)
+        
+        ;; display saved data being loaded
+        (if (> (@textUnits count) 1)
+            (debug "have text units")
+            (@textUnits each: (do (textUnit) (self appendViewForTextUnit:textUnit)))
+            (debug "finished showing text units")
+            (else (self addNewTextUnitToEnd:self)))
+        
         (@headerTableView setDataSource:self)
         (@headerTableView setRowHeight:20)
-        (@headerTableView setDelegate:self))
+        (@headerTableView setDelegate:self)
+        (debug "finished loading window"))
      
      (- makeNextTextUnitFirstResponder:(id)previous is
         (self makeFirstResponderTextUnitIndex:
@@ -186,6 +199,9 @@
         (self insertTextUnit: (self textUnitForDocument)
               atIndex:i))
      
+     (- appendViewForTextUnit:(id) textUnit is
+        (self insertTextUnit:textUnit atIndex:(@textUnitViews count)))
+     
      ;; @function insertTextUnit
      ;; @description: main insert Text Unit method, responsible for undo,
      ;; reformatting, adding observer, etc.
@@ -206,6 +222,7 @@
                           (+ (frame-height frame) (frame-y frame)))
                      (else 0)))
         
+        
         (set textUnitView ((TextUnitView alloc)
                            initWithFrame:(list
                                               X_MARGIN
@@ -213,6 +230,7 @@
                                               (- (frame-width (@contentView frame)) (* 2 X_MARGIN))
                                               20)
                            TextUnit: textUnit))
+        
         
         (textUnitView setAutoresizingMask:2)
         (@textUnitViews insertObject:textUnitView atIndex:index)
@@ -457,13 +475,10 @@
         (coder encodeInt:   @level forKey:"level"))
      
      (- (id)initWithCoder:(id)coder is
-        (debug "initing Text Unit with coder")
         (super init)
         (self setTexts:(coder decodeObjectForKey:"texts"))
         (self setNotes:(coder decodeObjectForKey:"notes"))
         (self setLevel:(coder decodeIntForKey:   "level"))
-        (debug "done initing self with coder")
-        (debug "first note is #{((self notes) 0)}")
         self)
      
      ;; init and dealloc
