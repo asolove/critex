@@ -56,14 +56,22 @@
 ;; @description controls the Wiki HUD window
 (class WikiController is NSWindowController
      (ivar (id) wikiPages
+               (id) textView
            (id) pagesController)
      
      (ivar-accessors)
      
-     (- initWithWikiPages:(id)wikiPages is
+         (- initWithWikiPages:(id)wikiPages is
         (super initWithWindowNibName:"WikiWindow")
         (set @wikiPages wikiPages)
-        self))
+        (@textView set)
+        self)
+     
+     (- dealloc is
+        (@wikiPages release)
+        (@textView release)
+        (@pagesController release)
+        (super dealloc)))
 
 
 ;; @class DocumentController
@@ -142,7 +150,6 @@
      
      ;; Setup views once the window is loaded
      (- windowDidLoad is
-        (debug "did load window")
         ((NSNotificationCenter defaultCenter)
          addObserver:self
          selector:"contentViewDidResize"
@@ -151,15 +158,12 @@
         
         ;; display saved data being loaded
         (if @textUnits
-            (debug "have text units")
             (@textUnits each: (do (textUnit)
-                                  (self insertViewForTextUnit:textUnit)))
-            (debug "finished showing text units"))
+                                  (self insertViewForTextUnit:textUnit))))
         
         (@headerTableView setDataSource:self)
         (@headerTableView setRowHeight:20)
-        (@headerTableView setDelegate:self)
-        (debug "finished loading window"))
+        (@headerTableView setDelegate:self))
      
      (- makeNextTextUnitFirstResponder:(id)previous is
         (self makeFirstResponderTextUnitIndex:
@@ -170,10 +174,8 @@
               (- (@textUnitViews indexOfObject:previous) 1)))
      
      (- makeFirstResponderTextUnitIndex:(int)i is
-        (debug "before compare")
         (< i 0)
         (>= i (@textUnitViews count))
-        (debug "after compares")
         
         (unless (or (< i 0) (>= i (@textUnitViews count)))
                 ((self window) makeFirstResponder:(((@textUnitViews i) textViews) 0)))
@@ -181,7 +183,6 @@
         ;; and scroll
         ;(self scrollToIndex:i)
         
-        (debug "end of make next...")
         )
      
      ;; @function textUnitForDocument
@@ -347,7 +348,6 @@
      (- setLevel:(int)level is
         (set attributes (self attributesForLevel: level))
         (@textUnit setLevel:level)
-        
         (@textViews each:(do (view)
                              (set text (view textStorage))
                              (text beginEditing)
@@ -454,6 +454,7 @@
      (- (id)initWithFrame:(NSRect)frame TextUnit:(id)textUnit is
         (super initWithFrame:frame)
         (set @textViews ((NSMutableArray alloc) init))
+        (set @textUnit textUnit)
         (set @noteViews ((NSMutableArray alloc) init))
         
         ;; TODO: More abstract system for specifying how a TextUnit
@@ -507,7 +508,6 @@
            (int)level)
      
      (ivar-accessors)
-     
      
      (- encodeWithCoder:(id)coder is
         (coder encodeObject:@mainText forKey:"mainText")
